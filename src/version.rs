@@ -3,7 +3,7 @@
 macro_rules! teb {
 	() => {{
 		let mut teb: *mut ::ntapi::ntpebteb::TEB;
-		asm!(
+		core::arch::asm!(
 			"mov rax, gs:[0x30]",
 			out("rax") teb
 		);
@@ -59,102 +59,102 @@ macro_rules! peb {
 
 
 #[macro_export]
-macro_rules! ordinal_macro {
-	( $arch:ident, $( $( $ordinal:ident )* ),* ) => {{
+macro_rules! _get_indices_internal {
+	( $arch:ident, $( $( $indices:ident )* ),* ) => {{
 		let build = unsafe {
 			::nt_syscall::peb!().OSBuildNumber
 		};
-		let mut value = [ $(::nt_syscall::ordinal_invalid::$( $ordinal )* ),* ];
+		let mut value = [ $(::nt_syscall::indices::invalid::$( $indices )* ),* ];
 
-		::nt_syscall::windows_10_20h2!($arch, build, value, $( $( $ordinal )* ),*);
-		::nt_syscall::windows_10_2004!($arch, build, value, $( $( $ordinal )* ),*);
-		::nt_syscall::windows_10_1909!($arch, build, value, $( $( $ordinal )* ),*);
-		::nt_syscall::windows_10_1903!($arch, build, value, $( $( $ordinal )* ),*);
-		::nt_syscall::windows_10_1809!($arch, build, value, $( $( $ordinal )* ),*);
-		::nt_syscall::windows_10_1803!($arch, build, value, $( $( $ordinal )* ),*);
-		::nt_syscall::windows_10_1709!($arch, build, value, $( $( $ordinal )* ),*);
-		::nt_syscall::windows_10_1703!($arch, build, value, $( $( $ordinal )* ),*);
-		::nt_syscall::windows_10_1607!($arch, build, value, $( $( $ordinal )* ),*);
-		::nt_syscall::windows_10_1511!($arch, build, value, $( $( $ordinal )* ),*);
-		::nt_syscall::windows_10_1507!($arch, build, value, $( $( $ordinal )* ),*);
+		::nt_syscall::windows_10_20h2!($arch, build, value, $( $( $indices )* ),*);
+		::nt_syscall::windows_10_2004!($arch, build, value, $( $( $indices )* ),*);
+		::nt_syscall::windows_10_1909!($arch, build, value, $( $( $indices )* ),*);
+		::nt_syscall::windows_10_1903!($arch, build, value, $( $( $indices )* ),*);
+		::nt_syscall::windows_10_1809!($arch, build, value, $( $( $indices )* ),*);
+		::nt_syscall::windows_10_1803!($arch, build, value, $( $( $indices )* ),*);
+		::nt_syscall::windows_10_1709!($arch, build, value, $( $( $indices )* ),*);
+		::nt_syscall::windows_10_1703!($arch, build, value, $( $( $indices )* ),*);
+		::nt_syscall::windows_10_1607!($arch, build, value, $( $( $indices )* ),*);
+		::nt_syscall::windows_10_1511!($arch, build, value, $( $( $indices )* ),*);
+		::nt_syscall::windows_10_1507!($arch, build, value, $( $( $indices )* ),*);
 
-		::nt_syscall::windows_8_1!($arch, build, value, $( $( $ordinal )* ),*);
-		::nt_syscall::windows_8_0!($arch, build, value, $( $( $ordinal )* ),*);
+		::nt_syscall::windows_8_1!($arch, build, value, $( $( $indices )* ),*);
+		::nt_syscall::windows_8_0!($arch, build, value, $( $( $indices )* ),*);
 
-		::nt_syscall::windows_server_2012_r2!($arch, build, value, $( $( $ordinal )* ),*);
-		::nt_syscall::windows_server_2012_sp0!($arch, build, value, $( $( $ordinal )* ),*);
+		::nt_syscall::windows_server_2012_r2!($arch, build, value, $( $( $indices )* ),*);
+		::nt_syscall::windows_server_2012_sp0!($arch, build, value, $( $( $indices )* ),*);
 
-		::nt_syscall::windows_7_sp1!($arch, build, value, $( $( $ordinal )* ),*);
-		::nt_syscall::windows_7_sp0!($arch, build, value, $( $( $ordinal )* ),*);
+		::nt_syscall::windows_7_sp1!($arch, build, value, $( $( $indices )* ),*);
+		::nt_syscall::windows_7_sp0!($arch, build, value, $( $( $indices )* ),*);
 
-		::nt_syscall::windows_server_2008_r2_sp1!($arch, build, value, $( $( $ordinal )* ),*);
-		::nt_syscall::windows_server_2008_r2!($arch, build, value, $( $( $ordinal )* ),*);
-		::nt_syscall::windows_server_2008_sp2!($arch, build, value, $( $( $ordinal )* ),*);
-		::nt_syscall::windows_server_2008_sp0!($arch, build, value, $( $( $ordinal )* ),*);
+		::nt_syscall::windows_server_2008_r2_sp1!($arch, build, value, $( $( $indices )* ),*);
+		::nt_syscall::windows_server_2008_r2!($arch, build, value, $( $( $indices )* ),*);
+		::nt_syscall::windows_server_2008_sp2!($arch, build, value, $( $( $indices )* ),*);
+		::nt_syscall::windows_server_2008_sp0!($arch, build, value, $( $( $indices )* ),*);
 
-		::nt_syscall::windows_vista_sp2!($arch, build, value, $( $( $ordinal )* ),*);
-		::nt_syscall::windows_vista_sp1!($arch, build, value, $( $( $ordinal )* ),*);
-		::nt_syscall::windows_vista_sp0!($arch, build, value, $( $( $ordinal )* ),*);
+		::nt_syscall::windows_vista_sp2!($arch, build, value, $( $( $indices )* ),*);
+		::nt_syscall::windows_vista_sp1!($arch, build, value, $( $( $indices )* ),*);
+		::nt_syscall::windows_vista_sp0!($arch, build, value, $( $( $indices )* ),*);
 
-		::nt_syscall::windows_server_2003_r2_sp2!($arch, build, value, $( $( $ordinal )* ),*);
-		::nt_syscall::windows_server_2003_r2!($arch, build, value, $( $( $ordinal )* ),*);
-		::nt_syscall::windows_server_2003_sp2!($arch, build, value, $( $( $ordinal )* ),*);
-		::nt_syscall::windows_server_2003_sp1!($arch, build, value, $( $( $ordinal )* ),*);
-		::nt_syscall::windows_server_2003_sp0!($arch, build, value, $( $( $ordinal )* ),*);
+		::nt_syscall::windows_server_2003_r2_sp2!($arch, build, value, $( $( $indices )* ),*);
+		::nt_syscall::windows_server_2003_r2!($arch, build, value, $( $( $indices )* ),*);
+		::nt_syscall::windows_server_2003_sp2!($arch, build, value, $( $( $indices )* ),*);
+		::nt_syscall::windows_server_2003_sp1!($arch, build, value, $( $( $indices )* ),*);
+		::nt_syscall::windows_server_2003_sp0!($arch, build, value, $( $( $indices )* ),*);
 
-		::nt_syscall::windows_xp_sp3!($arch, build, value, $( $( $ordinal )* ),*);
-		::nt_syscall::windows_xp_sp2!($arch, build, value, $( $( $ordinal )* ),*);
-		::nt_syscall::windows_xp_sp1!($arch, build, value, $( $( $ordinal )* ),*);
-		::nt_syscall::windows_xp_sp0!($arch, build, value, $( $( $ordinal )* ),*);
+		::nt_syscall::windows_xp_sp3!($arch, build, value, $( $( $indices )* ),*);
+		::nt_syscall::windows_xp_sp2!($arch, build, value, $( $( $indices )* ),*);
+		::nt_syscall::windows_xp_sp1!($arch, build, value, $( $( $indices )* ),*);
+		::nt_syscall::windows_xp_sp0!($arch, build, value, $( $( $indices )* ),*);
 
 		value
 	}};
 }
 
 #[macro_export]
-macro_rules! ordinal_x64 {
-	( $( $( $ordinal:ident )* ),* ) => {{
-		::nt_syscall::ordinal_macro!(ordinal_x64, $( $( $ordinal )* ),* )
+macro_rules! get_indices_x64 {
+	( $( $( $indices:ident )* ),* ) => {{
+		::nt_syscall::_get_indices_internal!(x64, $( $( $indices )* ),* )
 	}}
 }
 #[macro_export]
-macro_rules! ordinal_x86 {
-	( $( $( $ordinal:ident )* ),* ) => {{
-		::nt_syscall::ordinal_macro!(ordinal_x86, $( $( $ordinal )* ),* )
+macro_rules! get_indices_x86 {
+	( $( $( $indices:ident )* ),* ) => {{
+		::nt_syscall::_get_indices_internal!(x86, $( $( $indices )* ),* )
 	}}
 }
 
 #[macro_export]
 #[cfg(target_arch="x86_64")]
-macro_rules! ordinal {
-	( $( $( $ordinal:ident )* ),* ) => {{
-		::nt_syscall::ordinal_x64!( $( $( $ordinal )* ),* )
+macro_rules! get_indices {
+	( $( $( $indices:ident )* ),* ) => {{
+		::nt_syscall::get_indices_x64!( $( $( $indices )* ),* )
 	}};
 }
 #[macro_export]
 #[cfg(target_arch="x86")]
-macro_rules! ordinal {
-	( $( $( $ordinal:ident )* ),* ) => {{
+macro_rules! get_indices {
+	( $( $( $indices:ident )* ),* ) => {{
 		match ::nt_syscall::cpu_mode!() {
 			::nt_syscall::CpuMode::EmulatedX86 => {
-				::nt_syscall::ordinal_x64!( $( $( $ordinal )* ),* )
+				::nt_syscall::get_indices_x64!( $( $( $indices )* ),* )
 			}
 			::nt_syscall::CpuMode::NativeX86 => {
-				::nt_syscall::ordinal_x86!( $( $( $ordinal )* ),* )
+				::nt_syscall::get_indices_x86!( $( $( $indices )* ),* )
 			}
 			_ => {
-				[ $(::nt_syscall::ordinal_invalid::$( $ordinal )* ),* ]
+				[ $(::nt_syscall::indices::invalid::$( $indices )* ),* ]
 			}
 		}
 	}};
 }
 
 #[macro_export]
-macro_rules! ordinal_valid {
-	( $( $ordinals:expr )* ) => {{
+macro_rules! are_indices_valid {
+	( $( $indices:expr )* ) => {{
 		let mut is_valid = true;
-		for ordinal in $( $ordinals )* {
-			if ordinal == u32::MAX {
+		for index in $( $indices )* {
+			if index == u32::MAX {
 				is_valid = false;
 				break;
 			}
@@ -166,215 +166,58 @@ macro_rules! ordinal_valid {
 
 
 
-#[cfg(not(feature = "windows_10_20h2"))] #[macro_export] macro_rules! windows_10_20h2 { ($b:expr, $v:expr, $( $o:ident ),*) => { } }
-#[cfg(feature = "windows_10_20h2")] #[macro_export] macro_rules! windows_10_20h2 {
-	($a:ident, $b:expr, $v:expr, $($o:ident),*) => {
-		if $b == 19042 {$v = [ $( ::nt_syscall::$a::windows_10_20h2::$o ),* ] }
-	}
-}
-#[cfg(not(feature = "windows_10_2004"))] #[macro_export] macro_rules! windows_10_2004 { ($b:expr, $v:expr, $( $o:ident ),*) => { } }
-#[cfg(feature = "windows_10_2004")] #[macro_export] macro_rules! windows_10_2004 {
-	($a:ident, $b:expr, $v:expr, $($o:ident),*) => {
-		if $b == 19041 {$v = [ $( ::nt_syscall::$a::windows_10_2004::$o ),* ] }
-	}
-}
-#[cfg(not(feature = "windows_10_1909"))] #[macro_export] macro_rules! windows_10_1909 { ($b:expr, $v:expr, $( $o:ident ),*) => { } }
-#[cfg(feature = "windows_10_1909")] #[macro_export] macro_rules! windows_10_1909 {
-	($a:ident, $b:expr, $v:expr, $($o:ident),*) => {
-		if $b == 18363 {$v = [ $( ::nt_syscall::$a::windows_10_1909::$o ),* ] }
-	}
-}
-#[cfg(not(feature = "windows_10_1903"))] #[macro_export] macro_rules! windows_10_1903 { ($b:expr, $v:expr, $( $o:ident ),*) => { } }
-#[cfg(feature = "windows_10_1903")] #[macro_export] macro_rules! windows_10_1903 {
-	($a:ident, $b:expr, $v:expr, $($o:ident),*) => {
-		if $b == 18362 {$v = [ $( ::nt_syscall::$a::windows_10_1903::$o ),* ] }
-	}
-}
-#[cfg(not(feature = "windows_10_1809"))] #[macro_export] macro_rules! windows_10_1809 { ($b:expr, $v:expr, $( $o:ident ),*) => { } }
-#[cfg(feature = "windows_10_1809")] #[macro_export] macro_rules! windows_10_1809 {
-	($a:ident, $b:expr, $v:expr, $($o:ident),*) => {
-		if $b == 17763 {$v = [ $( ::nt_syscall::$a::windows_10_1809::$o ),* ] }
-	}
-}
-#[cfg(not(feature = "windows_10_1803"))] #[macro_export] macro_rules! windows_10_1803 { ($b:expr, $v:expr, $( $o:ident ),*) => { } }
-#[cfg(feature = "windows_10_1803")] #[macro_export] macro_rules! windows_10_1803 {
-	($a:ident, $b:expr, $v:expr, $($o:ident),*) => {
-		if $b == 17134 {$v = [ $( ::nt_syscall::$a::windows_10_1803::$o ),* ] }
-	}
-}
-#[cfg(not(feature = "windows_10_1709"))] #[macro_export] macro_rules! windows_10_1709 { ($b:expr, $v:expr, $( $o:ident ),*) => { } }
-#[cfg(feature = "windows_10_1709")] #[macro_export] macro_rules! windows_10_1709 {
-	($a:ident, $b:expr, $v:expr, $($o:ident),*) => {
-		if $b == 16299 {$v = [ $( ::nt_syscall::$a::windows_10_1709::$o ),* ] }
-	}
-}
-#[cfg(not(feature = "windows_10_1703"))] #[macro_export] macro_rules! windows_10_1703 { ($b:expr, $v:expr, $( $o:ident ),*) => { } }
-#[cfg(feature = "windows_10_1703")] #[macro_export] macro_rules! windows_10_1703 {
-	($a:ident, $b:expr, $v:expr, $($o:ident),*) => {
-		if $b == 15063 {$v = [ $( ::nt_syscall::$a::windows_10_1703::$o ),* ] }
-	}
-}
-#[cfg(not(feature = "windows_10_1607"))] #[macro_export] macro_rules! windows_10_1607 { ($b:expr, $v:expr, $( $o:ident ),*) => { } }
-#[cfg(feature = "windows_10_1607")] #[macro_export] macro_rules! windows_10_1607 {
-	($a:ident, $b:expr, $v:expr, $($o:ident),*) => {
-		if $b == 14393 {$v = [ $( ::nt_syscall::$a::windows_10_1607::$o ),* ] }
-	}
-}
-#[cfg(not(feature = "windows_10_1511"))] #[macro_export] macro_rules! windows_10_1511 { ($b:expr, $v:expr, $( $o:ident ),*) => { } }
-#[cfg(feature = "windows_10_1511")] #[macro_export] macro_rules! windows_10_1511 {
-	($a:ident, $b:expr, $v:expr, $($o:ident),*) => {
-		if $b == 10586 {$v = [ $( ::nt_syscall::$a::windows_10_1511::$o ),* ] }
-	}
-}
-#[cfg(not(feature = "windows_10_1507"))] #[macro_export] macro_rules! windows_10_1507 { ($b:expr, $v:expr, $( $o:ident ),*) => { } }
-#[cfg(feature = "windows_10_1507")] #[macro_export] macro_rules! windows_10_1507 {
-	($a:ident, $b:expr, $v:expr, $($o:ident),*) => {
-		if $b == 10240 {$v = [ $( ::nt_syscall::$a::windows_10_1507::$o ),* ] }
-	}
+macro_rules! add_version {
+	($build:expr, $version:ident, $feature:expr) => {
+		#[cfg(not(feature = $feature))]
+		#[macro_export]
+		macro_rules! $version {
+			($$build_2:expr, $$values:expr, $$( $$indices:ident ),*) => { }
+		}
+		
+		#[cfg(feature = $feature)]
+		#[macro_export]
+		macro_rules! $version {
+			($$arch:ident, $$build_2:expr, $$values:expr, $$( $$indices:ident ),*) => {
+				if $$build_2 == $build {
+					$values = [
+						$$( ::nt_syscall::indices::$arch::$version::$$indices ),*
+					];
+				}
+			}
+		}
+	};
 }
 
-
-#[cfg(not(feature = "windows_8_1"))] #[macro_export] macro_rules! windows_8_1 { ($b:expr, $v:expr, $( $o:ident ),*) => { } }
-#[cfg(feature = "windows_8_1")] #[macro_export] macro_rules! windows_8_1 {
-	($a:ident, $b:expr, $v:expr, $($o:ident),*) => {
-		if $b == 9600 {$v = [ $( ::nt_syscall::$a::windows_8_1::$o ),* ] }
-	}
-}
-#[cfg(not(feature = "windows_8_0"))] #[macro_export] macro_rules! windows_8_0 { ($b:expr, $v:expr, $( $o:ident ),*) => { } }
-#[cfg(feature = "windows_8_0")] #[macro_export] macro_rules! windows_8_0 {
-	($a:ident, $b:expr, $v:expr, $($o:ident),*) => {
-		if $b == 9200 {$v = [ $( ::nt_syscall::$a::windows_8_0::$o ),* ] }
-	}
-}
-
-
-#[cfg(not(feature = "windows_server_2012_r2"))] #[macro_export] macro_rules! windows_server_2012_r2 { ($b:expr, $v:expr, $( $o:ident ),*) => { } }
-#[cfg(feature = "windows_server_2012_r2")] #[macro_export] macro_rules! windows_server_2012_r2 {
-	($a:ident, $b:expr, $v:expr, $($o:ident),*) => {
-		if $b == 9600 {$v = [ $( ::nt_syscall::$a::windows_server_2012_r2::$o ),* ] }
-	}
-}
-#[cfg(not(feature = "windows_server_2012_sp0"))] #[macro_export] macro_rules! windows_server_2012_sp0 { ($b:expr, $v:expr, $( $o:ident ),*) => { } }
-#[cfg(feature = "windows_server_2012_sp0")] #[macro_export] macro_rules! windows_server_2012_sp0 {
-	($a:ident, $b:expr, $v:expr, $($o:ident),*) => {
-		if $b == 9200 {$v = [ $( ::nt_syscall::$a::windows_server_2012_sp0::$o ),* ] }
-	}
-}
-
-
-#[cfg(not(feature = "windows_7_sp1"))] #[macro_export] macro_rules! windows_7_sp1 { ($b:expr, $v:expr, $( $o:ident ),*) => { } }
-#[cfg(feature = "windows_7_sp1")] #[macro_export] macro_rules! windows_7_sp1 {
-	($a:ident, $b:expr, $v:expr, $($o:ident),*) => {
-		if $b == 7601 {$v = [ $( ::nt_syscall::$a::windows_7_sp1::$o ),* ] }
-	}
-}
-#[cfg(not(feature = "windows_7_sp0"))] #[macro_export] macro_rules! windows_7_sp0 { ($b:expr, $v:expr, $( $o:ident ),*) => { } }
-#[cfg(feature = "windows_7_sp0")] #[macro_export] macro_rules! windows_7_sp0 {
-	($a:ident, $b:expr, $v:expr, $($o:ident),*) => {
-		if $b == 7600 {$v = [ $( ::nt_syscall::$a::windows_7_sp0::$o ),* ] }
-	}
-}
-
-
-#[cfg(not(feature = "windows_server_2008_r2_sp1"))] #[macro_export] macro_rules! windows_server_2008_r2_sp1 { ($b:expr, $v:expr, $( $o:ident ),*) => { } }
-#[cfg(feature = "windows_server_2008_r2_sp1")] #[macro_export] macro_rules! windows_server_2008_r2_sp1 {
-	($a:ident, $b:expr, $v:expr, $($o:ident),*) => {
-		if $b == 7601 {$v = [ $( ::nt_syscall::$a::windows_server_2008_r2_sp1::$o ),* ] }
-	}
-}
-#[cfg(not(feature = "windows_server_2008_r2"))] #[macro_export] macro_rules! windows_server_2008_r2 { ($b:expr, $v:expr, $( $o:ident ),*) => { } }
-#[cfg(feature = "windows_server_2008_r2")] #[macro_export] macro_rules! windows_server_2008_r2 {
-	($a:ident, $b:expr, $v:expr, $($o:ident),*) => {
-		if $b == 7600 {$v = [ $( ::nt_syscall::$a::windows_server_2008_r2::$o ),* ] }
-	}
-}
-#[cfg(not(feature = "windows_server_2008_sp2"))] #[macro_export] macro_rules! windows_server_2008_sp2 { ($b:expr, $v:expr, $( $o:ident ),*) => { } }
-#[cfg(feature = "windows_server_2008_sp2")] #[macro_export] macro_rules! windows_server_2008_sp2 {
-	($a:ident, $b:expr, $v:expr, $($o:ident),*) => {
-		if $b == 6002 {$v = [ $( ::nt_syscall::$a::windows_server_2008_sp2::$o ),* ] }
-	}
-}
-#[cfg(not(feature = "windows_server_2008_sp0"))] #[macro_export] macro_rules! windows_server_2008_sp0 { ($b:expr, $v:expr, $( $o:ident ),*) => { } }
-#[cfg(feature = "windows_server_2008_sp0")] #[macro_export] macro_rules! windows_server_2008_sp0 {
-	($a:ident, $b:expr, $v:expr, $($o:ident),*) => {
-		if $b == 6001 {$v = [ $( ::nt_syscall::$a::windows_server_2008_sp0::$o ),* ] }
-	}
-}
-
-
-#[cfg(not(feature = "windows_vista_sp2"))] #[macro_export] macro_rules! windows_vista_sp2 { ($b:expr, $v:expr, $( $o:ident ),*) => { } }
-#[cfg(feature = "windows_vista_sp2")] #[macro_export] macro_rules! windows_vista_sp2 {
-	($a:ident, $b:expr, $v:expr, $($o:ident),*) => {
-		if $b == 6002 {$v = [ $( ::nt_syscall::$a::windows_vista_sp2::$o ),* ] }
-	}
-}
-#[cfg(not(feature = "windows_vista_sp1"))] #[macro_export] macro_rules! windows_vista_sp1 { ($b:expr, $v:expr, $( $o:ident ),*) => { } }
-#[cfg(feature = "windows_vista_sp1")] #[macro_export] macro_rules! windows_vista_sp1 {
-	($a:ident, $b:expr, $v:expr, $($o:ident),*) => {
-		if $b == 6001 {$v = [ $( ::nt_syscall::$a::windows_vista_sp1::$o ),* ] }
-	}
-}
-#[cfg(not(feature = "windows_vista_sp0"))] #[macro_export] macro_rules! windows_vista_sp0 { ($b:expr, $v:expr, $( $o:ident ),*) => { } }
-#[cfg(feature = "windows_vista_sp0")] #[macro_export] macro_rules! windows_vista_sp0 {
-	($a:ident, $b:expr, $v:expr, $($o:ident),*) => {
-		if $b == 6000 {$v = [ $( ::nt_syscall::$a::windows_vista_sp0::$o ),* ] }
-	}
-}
-
-
-#[cfg(not(feature = "windows_server_2003_r2_sp2"))] #[macro_export] macro_rules! windows_server_2003_r2_sp2 { ($b:expr, $v:expr, $( $o:ident ),*) => { } }
-#[cfg(feature = "windows_server_2003_r2_sp2")] #[macro_export] macro_rules! windows_server_2003_r2_sp2 {
-	($a:ident, $b:expr, $v:expr, $($o:ident),*) => {
-		if $b == 3790 {$v = [ $( ::nt_syscall::$a::windows_server_2003_r2_sp2::$o ),* ] }
-	}
-}
-#[cfg(not(feature = "windows_server_2003_r2"))] #[macro_export] macro_rules! windows_server_2003_r2 { ($b:expr, $v:expr, $( $o:ident ),*) => { } }
-#[cfg(feature = "windows_server_2003_r2")] #[macro_export] macro_rules! windows_server_2003_r2 {
-	($a:ident, $b:expr, $v:expr, $($o:ident),*) => {
-		if $b == 3790 {$v = [ $( ::nt_syscall::$a::windows_server_2003_r2::$o ),* ] }
-	}
-}
-#[cfg(not(feature = "windows_server_2003_sp2"))] #[macro_export] macro_rules! windows_server_2003_sp2 { ($b:expr, $v:expr, $( $o:ident ),*) => { } }
-#[cfg(feature = "windows_server_2003_sp2")] #[macro_export] macro_rules! windows_server_2003_sp2 {
-	($a:ident, $b:expr, $v:expr, $($o:ident),*) => {
-		if $b == 3790 {$v = [ $( ::nt_syscall::$a::windows_server_2003_sp2::$o ),* ] }
-	}
-}
-#[cfg(not(feature = "windows_server_2003_sp1"))] #[macro_export] macro_rules! windows_server_2003_sp1 { ($b:expr, $v:expr, $( $o:ident ),*) => { } }
-#[cfg(feature = "windows_server_2003_sp1")] #[macro_export] macro_rules! windows_server_2003_sp1 {
-	($a:ident, $b:expr, $v:expr, $($o:ident),*) => {
-		if $b == 3790 {$v = [ $( ::nt_syscall::$a::windows_server_2003_sp1::$o ),* ] }
-	}
-}
-#[cfg(not(feature = "windows_server_2003_sp0"))] #[macro_export] macro_rules! windows_server_2003_sp0 { ($b:expr, $v:expr, $( $o:ident ),*) => { } }
-#[cfg(feature = "windows_server_2003_sp0")] #[macro_export] macro_rules! windows_server_2003_sp0 {
-	($a:ident, $b:expr, $v:expr, $($o:ident),*) => {
-		if $b == 3790 {$v = [ $( ::nt_syscall::$a::windows_server_2003_sp0::$o ),* ] }
-	}
-}
-
-
-#[cfg(not(feature = "windows_xp_sp3"))] #[macro_export] macro_rules! windows_xp_sp3 { ($b:expr, $v:expr, $( $o:ident ),*) => { } }
-#[cfg(feature = "windows_xp_sp3")] #[macro_export] macro_rules! windows_xp_sp3 {
-	($a:ident, $b:expr, $v:expr, $($o:ident),*) => {
-		if $b == 2600 {$v = [ $( ::nt_syscall::$a::windows_xp_sp3::$o ),* ] }
-	}
-}
-#[cfg(not(feature = "windows_xp_sp2"))] #[macro_export] macro_rules! windows_xp_sp2 { ($b:expr, $v:expr, $( $o:ident ),*) => { } }
-#[cfg(feature = "windows_xp_sp2")] #[macro_export] macro_rules! windows_xp_sp2 {
-	($a:ident, $b:expr, $v:expr, $($o:ident),*) => {
-		if $b == 2600 {$v = [ $( ::nt_syscall::$a::windows_xp_sp2::$o ),* ] }
-	}
-}
-#[cfg(not(feature = "windows_xp_sp1"))] #[macro_export] macro_rules! windows_xp_sp1 { ($b:expr, $v:expr, $( $o:ident ),*) => { } }
-#[cfg(feature = "windows_xp_sp1")] #[macro_export] macro_rules! windows_xp_sp1 {
-	($a:ident, $b:expr, $v:expr, $($o:ident),*) => {
-		if $b == 2600 {$v = [ $( ::nt_syscall::$a::windows_xp_sp1::$o ),* ] }
-	}
-}
-#[cfg(not(feature = "windows_xp_sp0"))] #[macro_export] macro_rules! windows_xp_sp0 { ($b:expr, $v:expr, $( $o:ident ),*) => { } }
-#[cfg(feature = "windows_xp_sp0")] #[macro_export] macro_rules! windows_xp_sp0 {
-	($a:ident, $b:expr, $v:expr, $($o:ident),*) => {
-		if $b == 2600 {$v = [ $( ::nt_syscall::$a::windows_xp_sp0::$o ),* ] }
-	}
-}
+add_version!(19042, windows_10_20h2, "windows_10_20h2");
+add_version!(19041, windows_10_2004, "windows_10_2004");
+add_version!(18363, windows_10_1909, "windows_10_1909");
+add_version!(18362, windows_10_1903, "windows_10_1903");
+add_version!(17763, windows_10_1809, "windows_10_1809");
+add_version!(17134, windows_10_1803, "windows_10_1803");
+add_version!(16299, windows_10_1709, "windows_10_1709");
+add_version!(15063, windows_10_1703, "windows_10_1703");
+add_version!(14393, windows_10_1607, "windows_10_1607");
+add_version!(10586, windows_10_1511, "windows_10_1511");
+add_version!(10240, windows_10_1507, "windows_10_1507");
+add_version!(9600, windows_8_1, "windows_8_1");
+add_version!(9200, windows_8_0, "windows_8_0");
+add_version!(9600, windows_server_2012_r2, "windows_server_2012_r2");
+add_version!(9200, windows_server_2012_sp0, "windows_server_2012_sp0");
+add_version!(7601, windows_7_sp1, "windows_7_sp1");
+add_version!(7600, windows_7_sp0, "windows_7_sp0");
+add_version!(7601, windows_server_2008_r2_sp1, "windows_server_2008_r2_sp1");
+add_version!(7600, windows_server_2008_r2, "windows_server_2008_r2");
+add_version!(6002, windows_server_2008_sp2, "windows_server_2008_sp2");
+add_version!(6001, windows_server_2008_sp0, "windows_server_2008_sp0");
+add_version!(6002, windows_vista_sp2, "windows_vista_sp2");
+add_version!(6001, windows_vista_sp1, "windows_vista_sp1");
+add_version!(6000, windows_vista_sp0, "windows_vista_sp0");
+add_version!(3790, windows_server_2003_r2_sp2, "windows_server_2003_r2_sp2");
+add_version!(3790, windows_server_2003_r2, "windows_server_2003_r2");
+add_version!(3790, windows_server_2003_sp2, "windows_server_2003_sp2");
+add_version!(3790, windows_server_2003_sp1, "windows_server_2003_sp1");
+add_version!(3790, windows_server_2003_sp0, "windows_server_2003_sp0");
+add_version!(2600, windows_xp_sp3, "windows_xp_sp3");
+add_version!(2600, windows_xp_sp2, "windows_xp_sp2");
+add_version!(2600, windows_xp_sp1, "windows_xp_sp1");
+add_version!(2600, windows_xp_sp0, "windows_xp_sp0");

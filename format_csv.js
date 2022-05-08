@@ -1,5 +1,6 @@
 /*
-	Primitive script that allows extracting of syscalls oridnals from https://github.com/j00ru/windows-syscalls
+	Primitive script that allows extracting of syscalls oridnals from 
+	https://github.com/j00ru/windows-syscalls
 	Remember to rename invalid module names
 */
 

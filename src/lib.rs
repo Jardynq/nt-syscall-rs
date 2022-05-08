@@ -1,11 +1,9 @@
 #![no_std]
-#![feature(asm)]
 #![allow(unused_macros)]
+#![feature(macro_metavar_expr)]
 
 
-pub mod ordinal_x64;
-pub mod ordinal_x86;
-pub mod ordinal_invalid;
+pub mod indices;
 
 mod version;
 pub use version::*;
@@ -123,14 +121,14 @@ macro_rules! syscall {
 
 #[macro_export]
 macro_rules! syscall_x64 {
-	($($ordinal:expr)*) => {{
+	($($index:expr)*) => {{
 		let mut status: u64;
 		asm!(
 			"sub rsp, 0x30",
 			"syscall",
 			"add rsp, 0x30",
 
-			in("rax") ($($ordinal)*) as u64,
+			in("rax") ($($index)*) as u64,
 
 			lateout("r10") _,
 			lateout("rdx") _,
@@ -142,14 +140,14 @@ macro_rules! syscall_x64 {
 		);
 		(status & 0xffff_ffff) as u32
 	}};
-	($($ordinal:expr)*, $($p1:expr)*) => {{
+	($($index:expr)*, $($p1:expr)*) => {{
 		let mut status: u64;
 		asm!(
 			"sub rsp, 0x30",
 			"syscall",
 			"add rsp, 0x30",
 
-			in("rax") ($($ordinal)*) as u64,
+			in("rax") ($($index)*) as u64,
 			in("r10") ($($p1)*) as u64,
 			
 			lateout("r10") _,
@@ -162,14 +160,14 @@ macro_rules! syscall_x64 {
 		);
 		(status & 0xffff_ffff) as u32
 	}};
-	($($ordinal:expr)*, $($p1:expr)*, $($p2:expr)*) => {{
+	($($index:expr)*, $($p1:expr)*, $($p2:expr)*) => {{
 		let mut status: u64;
 		asm!(
 			"sub rsp, 0x30",
 			"syscall",
 			"add rsp, 0x30",
 
-			in("rax") ($($ordinal)*) as u64,
+			in("rax") ($($index)*) as u64,
 			in("r10") ($($p1)*) as u64,
 			in("rdx") ($($p2)*) as u64,
 
@@ -183,14 +181,14 @@ macro_rules! syscall_x64 {
 		);
 		(status & 0xffff_ffff) as u32
 	}};
-	($($ordinal:expr)*, $($p1:expr)*, $($p2:expr)*, $($p3:expr)*) => {{
+	($($index:expr)*, $($p1:expr)*, $($p2:expr)*, $($p3:expr)*) => {{
 		let mut status: u64;
 		asm!(
 			"sub rsp, 0x30",
 			"syscall",
 			"add rsp, 0x30",
 
-			in("rax") ($($ordinal)*) as u64,
+			in("rax") ($($index)*) as u64,
 			in("r10") ($($p1)*) as u64,
 			in("rdx") ($($p2)*) as u64,
 			in("r8")  ($($p3)*) as u64,
@@ -205,14 +203,14 @@ macro_rules! syscall_x64 {
 		);
 		(status & 0xffff_ffff) as u32
 	}};
-	($($ordinal:expr)*, $($p1:expr)*, $($p2:expr)*, $($p3:expr)*, $($p4:expr)*) => {{
+	($($index:expr)*, $($p1:expr)*, $($p2:expr)*, $($p3:expr)*, $($p4:expr)*) => {{
 		let mut status: u64;
 		asm!(
 			"sub rsp, 0x30",
 			"syscall",
 			"add rsp, 0x30",
 
-			in("rax") ($($ordinal)*) as u64,
+			in("rax") ($($index)*) as u64,
 			in("r10") ($($p1)*) as u64,
 			in("rdx") ($($p2)*) as u64,
 			in("r8") ($($p3)*) as u64,
@@ -228,7 +226,7 @@ macro_rules! syscall_x64 {
 		);
 		(status & 0xffff_ffff) as u32
 	}};
-	($($ordinal:expr)*, $($p1:expr)*, $($p2:expr)*, $($p3:expr)*, $($p4:expr)*, $($p5:expr)*) => {{
+	($($index:expr)*, $($p1:expr)*, $($p2:expr)*, $($p3:expr)*, $($p4:expr)*, $($p5:expr)*) => {{
 		let mut status: u64;
 		asm!(
 			"sub rsp, 0x30",
@@ -239,7 +237,7 @@ macro_rules! syscall_x64 {
 
 			p5 = in(reg) ($($p5)*) as u64,
 
-			in("rax") ($($ordinal)*) as u64,
+			in("rax") ($($index)*) as u64,
 			in("r10") ($($p1)*) as u64,
 			in("rdx") ($($p2)*) as u64,
 			in("r8") ($($p3)*) as u64,
@@ -255,7 +253,7 @@ macro_rules! syscall_x64 {
 		);
 		(status & 0xffff_ffff) as u32
 	}};
-	($($ordinal:expr)*, $($p1:expr)*, $($p2:expr)*, $($p3:expr)*, $($p4:expr)*, $($p5:expr)*, $($p6:expr)*) => {{
+	($($index:expr)*, $($p1:expr)*, $($p2:expr)*, $($p3:expr)*, $($p4:expr)*, $($p5:expr)*, $($p6:expr)*) => {{
 		let mut status: u64;
 		asm!(
 			"sub rsp, 0x40",
@@ -268,7 +266,7 @@ macro_rules! syscall_x64 {
 			p5 = in(reg) ($($p5)*) as u64,
 			p6 = in(reg) ($($p6)*) as u64,
 
-			in("rax") ($($ordinal)*) as u64,
+			in("rax") ($($index)*) as u64,
 			in("r10") ($($p1)*) as u64,
 			in("rdx") ($($p2)*) as u64,
 			in("r8") ($($p3)*) as u64,
@@ -284,7 +282,7 @@ macro_rules! syscall_x64 {
 		);
 		(status & 0xffff_ffff) as u32
 	}};
-	($($ordinal:expr)*, $($p1:expr)*, $($p2:expr)*, $($p3:expr)*, $($p4:expr)*, $($p5:expr)*, $($p6:expr)*, $($p7:expr)*) => {{
+	($($index:expr)*, $($p1:expr)*, $($p2:expr)*, $($p3:expr)*, $($p4:expr)*, $($p5:expr)*, $($p6:expr)*, $($p7:expr)*) => {{
 		let mut status: u64;
 		asm!(
 			"sub rsp, 0x40",
@@ -299,7 +297,7 @@ macro_rules! syscall_x64 {
 			p6 = in(reg) ($($p6)*) as u64,
 			p7 = in(reg) ($($p7)*) as u64,
 
-			in("rax") ($($ordinal)*) as u64,
+			in("rax") ($($index)*) as u64,
 			in("r10") ($($p1)*) as u64,
 			in("rdx") ($($p2)*) as u64,
 			in("r8") ($($p3)*) as u64,
@@ -315,7 +313,7 @@ macro_rules! syscall_x64 {
 		);
 		(status & 0xffff_ffff) as u32
 	}};
-	($($ordinal:expr)*, $($p1:expr)*, $($p2:expr)*, $($p3:expr)*, $($p4:expr)*, $($p5:expr)*, $($p6:expr)*, $($p7:expr)*, $($p8:expr)*) => {{
+	($($index:expr)*, $($p1:expr)*, $($p2:expr)*, $($p3:expr)*, $($p4:expr)*, $($p5:expr)*, $($p6:expr)*, $($p7:expr)*, $($p8:expr)*) => {{
 		let mut status: u64;
 		asm!(
 			"sub rsp, 0x50",
@@ -332,7 +330,7 @@ macro_rules! syscall_x64 {
 			p7 = in(reg) ($($p7)*) as u64,
 			p8 = in(reg) ($($p8)*) as u64,
 
-			in("rax") ($($ordinal)*) as u64,
+			in("rax") ($($index)*) as u64,
 			in("r10") ($($p1)*) as u64,
 			in("rdx") ($($p2)*) as u64,
 			in("r8") ($($p3)*) as u64,
@@ -348,7 +346,7 @@ macro_rules! syscall_x64 {
 		);
 		(status & 0xffff_ffff) as u32
 	}};
-	($($ordinal:expr)*, $($p1:expr)*, $($p2:expr)*, $($p3:expr)*, $($p4:expr)*, $($p5:expr)*, $($p6:expr)*, $($p7:expr)*, $($p8:expr)*, $($p9:expr)*) => {{
+	($($index:expr)*, $($p1:expr)*, $($p2:expr)*, $($p3:expr)*, $($p4:expr)*, $($p5:expr)*, $($p6:expr)*, $($p7:expr)*, $($p8:expr)*, $($p9:expr)*) => {{
 		let mut status: u64;
 		asm!(
 			"sub rsp, 0x50",
@@ -367,7 +365,7 @@ macro_rules! syscall_x64 {
 			p8 = in(reg) ($($p8)*) as u64,
 			p9 = in(reg) ($($p9)*) as u64,
 
-			in("rax") ($($ordinal)*) as u64,
+			in("rax") ($($index)*) as u64,
 			in("r10") ($($p1)*) as u64,
 			in("rdx") ($($p2)*) as u64,
 			in("r8") ($($p3)*) as u64,
@@ -383,7 +381,7 @@ macro_rules! syscall_x64 {
 		);
 		(status & 0xffff_ffff) as u32
 	}};
-	($($ordinal:expr)*, $($p1:expr)*, $($p2:expr)*, $($p3:expr)*, $($p4:expr)*, $($p5:expr)*, $($p6:expr)*, $($p7:expr)*, $($p8:expr)*, $($p9:expr)*, $($p10:expr)*) => {{
+	($($index:expr)*, $($p1:expr)*, $($p2:expr)*, $($p3:expr)*, $($p4:expr)*, $($p5:expr)*, $($p6:expr)*, $($p7:expr)*, $($p8:expr)*, $($p9:expr)*, $($p10:expr)*) => {{
 		let mut status: u64;
 		asm!(
 			"sub rsp, 0x60",
@@ -404,7 +402,7 @@ macro_rules! syscall_x64 {
 			p9 = in(reg) ($($p9)*) as u64,
 			p10 = in(reg) ($($p10)*) as u64,
 
-			in("rax") ($($ordinal)*) as u64,
+			in("rax") ($($index)*) as u64,
 			in("r10") ($($p1)*) as u64,
 			in("rdx") ($($p2)*) as u64,
 			in("r8") ($($p3)*) as u64,
@@ -420,7 +418,7 @@ macro_rules! syscall_x64 {
 		);
 		(status & 0xffff_ffff) as u32
 	}};
-	($($ordinal:expr)*, $($p1:expr)*, $($p2:expr)*, $($p3:expr)*, $($p4:expr)*, $($p5:expr)*, $($p6:expr)*, $($p7:expr)*, $($p8:expr)*, $($p9:expr)*, $($p10:expr)*, $($p11:expr)*) => {{
+	($($index:expr)*, $($p1:expr)*, $($p2:expr)*, $($p3:expr)*, $($p4:expr)*, $($p5:expr)*, $($p6:expr)*, $($p7:expr)*, $($p8:expr)*, $($p9:expr)*, $($p10:expr)*, $($p11:expr)*) => {{
 		let mut status: u64;
 		asm!(
 			"sub rsp, 0x60",
@@ -443,7 +441,7 @@ macro_rules! syscall_x64 {
 			p10 = in(reg) ($($p10)*) as u64,
 			p11 = in(reg) ($($p11)*) as u64,
 
-			in("rax") ($($ordinal)*) as u64,
+			in("rax") ($($index)*) as u64,
 			in("r10") ($($p1)*) as u64,
 			in("rdx") ($($p2)*) as u64,
 			in("r8") ($($p3)*) as u64,
@@ -459,7 +457,7 @@ macro_rules! syscall_x64 {
 		);
 		(status & 0xffff_ffff) as u32
 	}};
-	($($ordinal:expr)*, $($p1:expr)*, $($p2:expr)*, $($p3:expr)*, $($p4:expr)*, $($p5:expr)*, $($p6:expr)*, $($p7:expr)*, $($p8:expr)*, $($p9:expr)*, $($p10:expr)*, $($p11:expr)*, $($p12:expr)*) => {{
+	($($index:expr)*, $($p1:expr)*, $($p2:expr)*, $($p3:expr)*, $($p4:expr)*, $($p5:expr)*, $($p6:expr)*, $($p7:expr)*, $($p8:expr)*, $($p9:expr)*, $($p10:expr)*, $($p11:expr)*, $($p12:expr)*) => {{
 		let mut status: u64;
 		asm!(
 			"sub rsp, 0x70",
@@ -484,7 +482,7 @@ macro_rules! syscall_x64 {
 			p11 = in(reg) ($($p11)*) as u64,
 			p12 = in(reg) ($($p12)*) as u64,
 
-			in("rax") ($($ordinal)*) as u64,
+			in("rax") ($($index)*) as u64,
 			in("r10") ($($p1)*) as u64,
 			in("rdx") ($($p2)*) as u64,
 			in("r8") ($($p3)*) as u64,
@@ -500,7 +498,7 @@ macro_rules! syscall_x64 {
 		);
 		(status & 0xffff_ffff) as u32
 	}};
-	($($ordinal:expr)*, $($p1:expr)*, $($p2:expr)*, $($p3:expr)*, $($p4:expr)*, $($p5:expr)*, $($p6:expr)*, $($p7:expr)*, $($p8:expr)*, $($p9:expr)*, $($p10:expr)*, $($p11:expr)*, $($p12:expr)*, $($p13:expr)*) => {{
+	($($index:expr)*, $($p1:expr)*, $($p2:expr)*, $($p3:expr)*, $($p4:expr)*, $($p5:expr)*, $($p6:expr)*, $($p7:expr)*, $($p8:expr)*, $($p9:expr)*, $($p10:expr)*, $($p11:expr)*, $($p12:expr)*, $($p13:expr)*) => {{
 		let mut status: u64;
 		asm!(
 			"sub rsp, 0x70",
@@ -527,7 +525,7 @@ macro_rules! syscall_x64 {
 			p12 = in(reg) ($($p12)*) as u64,
 			p13 = in(reg) ($($p13)*) as u64,
 
-			in("rax") ($($ordinal)*) as u64,
+			in("rax") ($($index)*) as u64,
 			in("r10") ($($p1)*) as u64,
 			in("rdx") ($($p2)*) as u64,
 			in("r8") ($($p3)*) as u64,
@@ -550,8 +548,8 @@ macro_rules! syscall_x64 {
 
 #[macro_export]
 macro_rules! syscall_x86_emulated {
-	($($ordinal:expr)*) => {{
-		let ordinal: u64 = ($($ordinal)*) as u64;
+	($($index:expr)*) => {{
+		let index: u64 = ($($index)*) as u64;
 
 		let mut aligned: u32;
 		let mut status: u32;
@@ -567,11 +565,11 @@ macro_rules! syscall_x86_emulated {
 			);
 			asm!(
 				// Prepare stack spill space
-				"mov dword ptr [ecx + 0x00], {ordinal_lo}",
-				"mov dword ptr [ecx + 0x04], {ordinal_hi}",
+				"mov dword ptr [ecx + 0x00], {index_lo}",
+				"mov dword ptr [ecx + 0x04], {index_hi}",
 
-				ordinal_lo = in(reg) ::nt_syscall::lo!(ordinal),
-				ordinal_hi = in(reg) ::nt_syscall::hi!(ordinal),
+				index_lo = in(reg) ::nt_syscall::lo!(index),
+				index_hi = in(reg) ::nt_syscall::hi!(index),
 				in("ecx") aligned,
 				options(preserves_flags),
 			);
@@ -603,8 +601,8 @@ macro_rules! syscall_x86_emulated {
 
 		status
 	}};
-	($($ordinal:expr)*, $($p1:expr)*) => {{
-		let ordinal: u64 = ($($ordinal)*) as u64;
+	($($index:expr)*, $($p1:expr)*) => {{
+		let index: u64 = ($($index)*) as u64;
 		let p1: u64 = ($($p1)*) as u64;
 
 		let mut aligned: u32;
@@ -621,13 +619,13 @@ macro_rules! syscall_x86_emulated {
 			);
 			asm!(
 				// Prepare stack spill space
-				"mov dword ptr [ecx + 0x00], {ordinal_lo}",
-				"mov dword ptr [ecx + 0x04], {ordinal_hi}",
+				"mov dword ptr [ecx + 0x00], {index_lo}",
+				"mov dword ptr [ecx + 0x04], {index_hi}",
 				"mov dword ptr [ecx + 0x08], {p1_lo}",
 				"mov dword ptr [ecx + 0x0c], {p1_hi}",
 
-				ordinal_lo = in(reg) ::nt_syscall::lo!(ordinal),
-				ordinal_hi = in(reg) ::nt_syscall::hi!(ordinal),
+				index_lo = in(reg) ::nt_syscall::lo!(index),
+				index_hi = in(reg) ::nt_syscall::hi!(index),
 				p1_lo = in(reg) ::nt_syscall::lo!(p1),
 				p1_hi = in(reg) ::nt_syscall::hi!(p1),
 				in("ecx") aligned,
@@ -661,8 +659,8 @@ macro_rules! syscall_x86_emulated {
 
 		status
 	}};
-	($($ordinal:expr)*, $($p1:expr)*, $($p2:expr)*) => {{
-		let ordinal: u64 = ($($ordinal)*) as u64;
+	($($index:expr)*, $($p1:expr)*, $($p2:expr)*) => {{
+		let index: u64 = ($($index)*) as u64;
 		let p1: u64 = ($($p1)*) as u64;
 		let p2: u64 = ($($p2)*) as u64;
 
@@ -680,13 +678,13 @@ macro_rules! syscall_x86_emulated {
 			);
 			asm!(
 				// Prepare stack spill space
-				"mov dword ptr [ecx + 0x00], {ordinal_lo}",
-				"mov dword ptr [ecx + 0x04], {ordinal_hi}",
+				"mov dword ptr [ecx + 0x00], {index_lo}",
+				"mov dword ptr [ecx + 0x04], {index_hi}",
 				"mov dword ptr [ecx + 0x08], {p1_lo}",
 				"mov dword ptr [ecx + 0x0c], {p1_hi}",
 
-				ordinal_lo = in(reg) ::nt_syscall::lo!(ordinal),
-				ordinal_hi = in(reg) ::nt_syscall::hi!(ordinal),
+				index_lo = in(reg) ::nt_syscall::lo!(index),
+				index_hi = in(reg) ::nt_syscall::hi!(index),
 				p1_lo = in(reg) ::nt_syscall::lo!(p1),
 				p1_hi = in(reg) ::nt_syscall::hi!(p1),
 				in("ecx") aligned,
@@ -729,8 +727,8 @@ macro_rules! syscall_x86_emulated {
 
 		status
 	}};
-	($($ordinal:expr)*, $($p1:expr)*, $($p2:expr)*, $($p3:expr)*) => {{
-		let ordinal: u64 = ($($ordinal)*) as u64;
+	($($index:expr)*, $($p1:expr)*, $($p2:expr)*, $($p3:expr)*) => {{
+		let index: u64 = ($($index)*) as u64;
 		let p1: u64 = ($($p1)*) as u64;
 		let p2: u64 = ($($p2)*) as u64;
 		let p3: u64 = ($($p3)*) as u64;
@@ -749,13 +747,13 @@ macro_rules! syscall_x86_emulated {
 			);
 			asm!(
 				// Prepare stack spill space
-				"mov dword ptr [ecx + 0x00], {ordinal_lo}",
-				"mov dword ptr [ecx + 0x04], {ordinal_hi}",
+				"mov dword ptr [ecx + 0x00], {index_lo}",
+				"mov dword ptr [ecx + 0x04], {index_hi}",
 				"mov dword ptr [ecx + 0x08], {p1_lo}",
 				"mov dword ptr [ecx + 0x0c], {p1_hi}",
 
-				ordinal_lo = in(reg) ::nt_syscall::lo!(ordinal),
-				ordinal_hi = in(reg) ::nt_syscall::hi!(ordinal),
+				index_lo = in(reg) ::nt_syscall::lo!(index),
+				index_hi = in(reg) ::nt_syscall::hi!(index),
 				p1_lo = in(reg) ::nt_syscall::lo!(p1),
 				p1_hi = in(reg) ::nt_syscall::hi!(p1),
 				in("ecx") aligned,
@@ -802,8 +800,8 @@ macro_rules! syscall_x86_emulated {
 
 		status
 	}};
-	($($ordinal:expr)*, $($p1:expr)*, $($p2:expr)*, $($p3:expr)*, $($p4:expr)*) => {{
-		let ordinal: u64 = ($($ordinal)*) as u64;
+	($($index:expr)*, $($p1:expr)*, $($p2:expr)*, $($p3:expr)*, $($p4:expr)*) => {{
+		let index: u64 = ($($index)*) as u64;
 		let p1: u64 = ($($p1)*) as u64;
 		let p2: u64 = ($($p2)*) as u64;
 		let p3: u64 = ($($p3)*) as u64;
@@ -823,13 +821,13 @@ macro_rules! syscall_x86_emulated {
 			);
 			asm!(
 				// Prepare stack spill space
-				"mov dword ptr [ecx + 0x00], {ordinal_lo}",
-				"mov dword ptr [ecx + 0x04], {ordinal_hi}",
+				"mov dword ptr [ecx + 0x00], {index_lo}",
+				"mov dword ptr [ecx + 0x04], {index_hi}",
 				"mov dword ptr [ecx + 0x08], {p1_lo}",
 				"mov dword ptr [ecx + 0x0c], {p1_hi}",
 
-				ordinal_lo = in(reg) ::nt_syscall::lo!(ordinal),
-				ordinal_hi = in(reg) ::nt_syscall::hi!(ordinal),
+				index_lo = in(reg) ::nt_syscall::lo!(index),
+				index_hi = in(reg) ::nt_syscall::hi!(index),
 				p1_lo = in(reg) ::nt_syscall::lo!(p1),
 				p1_hi = in(reg) ::nt_syscall::hi!(p1),
 				in("ecx") aligned,
@@ -885,8 +883,8 @@ macro_rules! syscall_x86_emulated {
 
 		status
 	}};
-	($($ordinal:expr)*, $($p1:expr)*, $($p2:expr)*, $($p3:expr)*, $($p4:expr)*, $($p5:expr)*) => {{
-		let ordinal: u64 = ($($ordinal)*) as u64;
+	($($index:expr)*, $($p1:expr)*, $($p2:expr)*, $($p3:expr)*, $($p4:expr)*, $($p5:expr)*) => {{
+		let index: u64 = ($($index)*) as u64;
 		let p1: u64 = ($($p1)*) as u64;
 		let p2: u64 = ($($p2)*) as u64;
 		let p3: u64 = ($($p3)*) as u64;
@@ -907,13 +905,13 @@ macro_rules! syscall_x86_emulated {
 			);
 			asm!(
 				// Prepare stack spill space
-				"mov dword ptr [ecx + 0x00], {ordinal_lo}",
-				"mov dword ptr [ecx + 0x04], {ordinal_hi}",
+				"mov dword ptr [ecx + 0x00], {index_lo}",
+				"mov dword ptr [ecx + 0x04], {index_hi}",
 				"mov dword ptr [ecx + 0x08], {p1_lo}",
 				"mov dword ptr [ecx + 0x0c], {p1_hi}",
 
-				ordinal_lo = in(reg) ::nt_syscall::lo!(ordinal),
-				ordinal_hi = in(reg) ::nt_syscall::hi!(ordinal),
+				index_lo = in(reg) ::nt_syscall::lo!(index),
+				index_hi = in(reg) ::nt_syscall::hi!(index),
 				p1_lo = in(reg) ::nt_syscall::lo!(p1),
 				p1_hi = in(reg) ::nt_syscall::hi!(p1),
 				in("ecx") aligned,
@@ -979,8 +977,8 @@ macro_rules! syscall_x86_emulated {
 
 		status
 	}};
-	($($ordinal:expr)*, $($p1:expr)*, $($p2:expr)*, $($p3:expr)*, $($p4:expr)*, $($p5:expr)*, $($p6:expr)*) => {{
-		let ordinal: u64 = ($($ordinal)*) as u64;
+	($($index:expr)*, $($p1:expr)*, $($p2:expr)*, $($p3:expr)*, $($p4:expr)*, $($p5:expr)*, $($p6:expr)*) => {{
+		let index: u64 = ($($index)*) as u64;
 		let p1: u64 = ($($p1)*) as u64;
 		let p2: u64 = ($($p2)*) as u64;
 		let p3: u64 = ($($p3)*) as u64;
@@ -1002,13 +1000,13 @@ macro_rules! syscall_x86_emulated {
 			);
 			asm!(
 				// Prepare stack spill space
-				"mov dword ptr [ecx + 0x00], {ordinal_lo}",
-				"mov dword ptr [ecx + 0x04], {ordinal_hi}",
+				"mov dword ptr [ecx + 0x00], {index_lo}",
+				"mov dword ptr [ecx + 0x04], {index_hi}",
 				"mov dword ptr [ecx + 0x08], {p1_lo}",
 				"mov dword ptr [ecx + 0x0c], {p1_hi}",
 
-				ordinal_lo = in(reg) ::nt_syscall::lo!(ordinal),
-				ordinal_hi = in(reg) ::nt_syscall::hi!(ordinal),
+				index_lo = in(reg) ::nt_syscall::lo!(index),
+				index_hi = in(reg) ::nt_syscall::hi!(index),
 				p1_lo = in(reg) ::nt_syscall::lo!(p1),
 				p1_hi = in(reg) ::nt_syscall::hi!(p1),
 				in("ecx") aligned,
@@ -1078,8 +1076,8 @@ macro_rules! syscall_x86_emulated {
 
 		status
 	}};
-	($($ordinal:expr)*, $($p1:expr)*, $($p2:expr)*, $($p3:expr)*, $($p4:expr)*, $($p5:expr)*, $($p6:expr)*, $($p7:expr)*) => {{
-		let ordinal: u64 = ($($ordinal)*) as u64;
+	($($index:expr)*, $($p1:expr)*, $($p2:expr)*, $($p3:expr)*, $($p4:expr)*, $($p5:expr)*, $($p6:expr)*, $($p7:expr)*) => {{
+		let index: u64 = ($($index)*) as u64;
 		let p1: u64 = ($($p1)*) as u64;
 		let p2: u64 = ($($p2)*) as u64;
 		let p3: u64 = ($($p3)*) as u64;
@@ -1102,13 +1100,13 @@ macro_rules! syscall_x86_emulated {
 			);
 			asm!(
 				// Prepare stack spill space
-				"mov dword ptr [ecx + 0x00], {ordinal_lo}",
-				"mov dword ptr [ecx + 0x04], {ordinal_hi}",
+				"mov dword ptr [ecx + 0x00], {index_lo}",
+				"mov dword ptr [ecx + 0x04], {index_hi}",
 				"mov dword ptr [ecx + 0x08], {p1_lo}",
 				"mov dword ptr [ecx + 0x0c], {p1_hi}",
 
-				ordinal_lo = in(reg) ::nt_syscall::lo!(ordinal),
-				ordinal_hi = in(reg) ::nt_syscall::hi!(ordinal),
+				index_lo = in(reg) ::nt_syscall::lo!(index),
+				index_hi = in(reg) ::nt_syscall::hi!(index),
 				p1_lo = in(reg) ::nt_syscall::lo!(p1),
 				p1_hi = in(reg) ::nt_syscall::hi!(p1),
 				in("ecx") aligned,
@@ -1187,8 +1185,8 @@ macro_rules! syscall_x86_emulated {
 
 		status
 	}};
-	($($ordinal:expr)*, $($p1:expr)*, $($p2:expr)*, $($p3:expr)*, $($p4:expr)*, $($p5:expr)*, $($p6:expr)*, $($p7:expr)*, $($p8:expr)*) => {{
-		let ordinal: u64 = ($($ordinal)*) as u64;
+	($($index:expr)*, $($p1:expr)*, $($p2:expr)*, $($p3:expr)*, $($p4:expr)*, $($p5:expr)*, $($p6:expr)*, $($p7:expr)*, $($p8:expr)*) => {{
+		let index: u64 = ($($index)*) as u64;
 		let p1: u64 = ($($p1)*) as u64;
 		let p2: u64 = ($($p2)*) as u64;
 		let p3: u64 = ($($p3)*) as u64;
@@ -1212,13 +1210,13 @@ macro_rules! syscall_x86_emulated {
 			);
 			asm!(
 				// Prepare stack spill space
-				"mov dword ptr [ecx + 0x00], {ordinal_lo}",
-				"mov dword ptr [ecx + 0x04], {ordinal_hi}",
+				"mov dword ptr [ecx + 0x00], {index_lo}",
+				"mov dword ptr [ecx + 0x04], {index_hi}",
 				"mov dword ptr [ecx + 0x08], {p1_lo}",
 				"mov dword ptr [ecx + 0x0c], {p1_hi}",
 
-				ordinal_lo = in(reg) ::nt_syscall::lo!(ordinal),
-				ordinal_hi = in(reg) ::nt_syscall::hi!(ordinal),
+				index_lo = in(reg) ::nt_syscall::lo!(index),
+				index_hi = in(reg) ::nt_syscall::hi!(index),
 				p1_lo = in(reg) ::nt_syscall::lo!(p1),
 				p1_hi = in(reg) ::nt_syscall::hi!(p1),
 				in("ecx") aligned,
@@ -1301,8 +1299,8 @@ macro_rules! syscall_x86_emulated {
 
 		status
 	}};
-	($($ordinal:expr)*, $($p1:expr)*, $($p2:expr)*, $($p3:expr)*, $($p4:expr)*, $($p5:expr)*, $($p6:expr)*, $($p7:expr)*, $($p8:expr)*, $($p9:expr)*) => {{
-		let ordinal: u64 = ($($ordinal)*) as u64;
+	($($index:expr)*, $($p1:expr)*, $($p2:expr)*, $($p3:expr)*, $($p4:expr)*, $($p5:expr)*, $($p6:expr)*, $($p7:expr)*, $($p8:expr)*, $($p9:expr)*) => {{
+		let index: u64 = ($($index)*) as u64;
 		let p1: u64 = ($($p1)*) as u64;
 		let p2: u64 = ($($p2)*) as u64;
 		let p3: u64 = ($($p3)*) as u64;
@@ -1327,13 +1325,13 @@ macro_rules! syscall_x86_emulated {
 			);
 			asm!(
 				// Prepare stack spill space
-				"mov dword ptr [ecx + 0x00], {ordinal_lo}",
-				"mov dword ptr [ecx + 0x04], {ordinal_hi}",
+				"mov dword ptr [ecx + 0x00], {index_lo}",
+				"mov dword ptr [ecx + 0x04], {index_hi}",
 				"mov dword ptr [ecx + 0x08], {p1_lo}",
 				"mov dword ptr [ecx + 0x0c], {p1_hi}",
 
-				ordinal_lo = in(reg) ::nt_syscall::lo!(ordinal),
-				ordinal_hi = in(reg) ::nt_syscall::hi!(ordinal),
+				index_lo = in(reg) ::nt_syscall::lo!(index),
+				index_hi = in(reg) ::nt_syscall::hi!(index),
 				p1_lo = in(reg) ::nt_syscall::lo!(p1),
 				p1_hi = in(reg) ::nt_syscall::hi!(p1),
 				in("ecx") aligned,
@@ -1425,8 +1423,8 @@ macro_rules! syscall_x86_emulated {
 
 		status
 	}};
-	($($ordinal:expr)*, $($p1:expr)*, $($p2:expr)*, $($p3:expr)*, $($p4:expr)*, $($p5:expr)*, $($p6:expr)*, $($p7:expr)*, $($p8:expr)*, $($p9:expr)*, $($p10:expr)*) => {{
-		let ordinal: u64 = ($($ordinal)*) as u64;
+	($($index:expr)*, $($p1:expr)*, $($p2:expr)*, $($p3:expr)*, $($p4:expr)*, $($p5:expr)*, $($p6:expr)*, $($p7:expr)*, $($p8:expr)*, $($p9:expr)*, $($p10:expr)*) => {{
+		let index: u64 = ($($index)*) as u64;
 		let p1: u64 = ($($p1)*) as u64;
 		let p2: u64 = ($($p2)*) as u64;
 		let p3: u64 = ($($p3)*) as u64;
@@ -1452,13 +1450,13 @@ macro_rules! syscall_x86_emulated {
 			);
 			asm!(
 				// Prepare stack spill space
-				"mov dword ptr [ecx + 0x00], {ordinal_lo}",
-				"mov dword ptr [ecx + 0x04], {ordinal_hi}",
+				"mov dword ptr [ecx + 0x00], {index_lo}",
+				"mov dword ptr [ecx + 0x04], {index_hi}",
 				"mov dword ptr [ecx + 0x08], {p1_lo}",
 				"mov dword ptr [ecx + 0x0c], {p1_hi}",
 
-				ordinal_lo = in(reg) ::nt_syscall::lo!(ordinal),
-				ordinal_hi = in(reg) ::nt_syscall::hi!(ordinal),
+				index_lo = in(reg) ::nt_syscall::lo!(index),
+				index_hi = in(reg) ::nt_syscall::hi!(index),
 				p1_lo = in(reg) ::nt_syscall::lo!(p1),
 				p1_hi = in(reg) ::nt_syscall::hi!(p1),
 				in("ecx") aligned,
@@ -1554,8 +1552,8 @@ macro_rules! syscall_x86_emulated {
 
 		status
 	}};
-	($($ordinal:expr)*, $($p1:expr)*, $($p2:expr)*, $($p3:expr)*, $($p4:expr)*, $($p5:expr)*, $($p6:expr)*, $($p7:expr)*, $($p8:expr)*, $($p9:expr)*, $($p10:expr)*, $($p11:expr)*) => {{
-		let ordinal: u64 = ($($ordinal)*) as u64;
+	($($index:expr)*, $($p1:expr)*, $($p2:expr)*, $($p3:expr)*, $($p4:expr)*, $($p5:expr)*, $($p6:expr)*, $($p7:expr)*, $($p8:expr)*, $($p9:expr)*, $($p10:expr)*, $($p11:expr)*) => {{
+		let index: u64 = ($($index)*) as u64;
 		let p1: u64 = ($($p1)*) as u64;
 		let p2: u64 = ($($p2)*) as u64;
 		let p3: u64 = ($($p3)*) as u64;
@@ -1582,13 +1580,13 @@ macro_rules! syscall_x86_emulated {
 			);
 			asm!(
 				// Prepare stack spill space
-				"mov dword ptr [ecx + 0x00], {ordinal_lo}",
-				"mov dword ptr [ecx + 0x04], {ordinal_hi}",
+				"mov dword ptr [ecx + 0x00], {index_lo}",
+				"mov dword ptr [ecx + 0x04], {index_hi}",
 				"mov dword ptr [ecx + 0x08], {p1_lo}",
 				"mov dword ptr [ecx + 0x0c], {p1_hi}",
 
-				ordinal_lo = in(reg) ::nt_syscall::lo!(ordinal),
-				ordinal_hi = in(reg) ::nt_syscall::hi!(ordinal),
+				index_lo = in(reg) ::nt_syscall::lo!(index),
+				index_hi = in(reg) ::nt_syscall::hi!(index),
 				p1_lo = in(reg) ::nt_syscall::lo!(p1),
 				p1_hi = in(reg) ::nt_syscall::hi!(p1),
 				in("ecx") aligned,
@@ -1693,8 +1691,8 @@ macro_rules! syscall_x86_emulated {
 
 		status
 	}};
-	($($ordinal:expr)*, $($p1:expr)*, $($p2:expr)*, $($p3:expr)*, $($p4:expr)*, $($p5:expr)*, $($p6:expr)*, $($p7:expr)*, $($p8:expr)*, $($p9:expr)*, $($p10:expr)*, $($p11:expr)*, $($p12:expr)*) => {{
-		let ordinal: u64 = ($($ordinal)*) as u64;
+	($($index:expr)*, $($p1:expr)*, $($p2:expr)*, $($p3:expr)*, $($p4:expr)*, $($p5:expr)*, $($p6:expr)*, $($p7:expr)*, $($p8:expr)*, $($p9:expr)*, $($p10:expr)*, $($p11:expr)*, $($p12:expr)*) => {{
+		let index: u64 = ($($index)*) as u64;
 		let p1: u64 = ($($p1)*) as u64;
 		let p2: u64 = ($($p2)*) as u64;
 		let p3: u64 = ($($p3)*) as u64;
@@ -1722,13 +1720,13 @@ macro_rules! syscall_x86_emulated {
 			);
 			asm!(
 				// Prepare stack spill space
-				"mov dword ptr [ecx + 0x00], {ordinal_lo}",
-				"mov dword ptr [ecx + 0x04], {ordinal_hi}",
+				"mov dword ptr [ecx + 0x00], {index_lo}",
+				"mov dword ptr [ecx + 0x04], {index_hi}",
 				"mov dword ptr [ecx + 0x08], {p1_lo}",
 				"mov dword ptr [ecx + 0x0c], {p1_hi}",
 
-				ordinal_lo = in(reg) ::nt_syscall::lo!(ordinal),
-				ordinal_hi = in(reg) ::nt_syscall::hi!(ordinal),
+				index_lo = in(reg) ::nt_syscall::lo!(index),
+				index_hi = in(reg) ::nt_syscall::hi!(index),
 				p1_lo = in(reg) ::nt_syscall::lo!(p1),
 				p1_hi = in(reg) ::nt_syscall::hi!(p1),
 				in("ecx") aligned,
@@ -1837,8 +1835,8 @@ macro_rules! syscall_x86_emulated {
 
 		status
 	}};
-	($($ordinal:expr)*, $($p1:expr)*, $($p2:expr)*, $($p3:expr)*, $($p4:expr)*, $($p5:expr)*, $($p6:expr)*, $($p7:expr)*, $($p8:expr)*, $($p9:expr)*, $($p10:expr)*, $($p11:expr)*, $($p12:expr)*, $($p13:expr)*) => {{
-		let ordinal: u64 = ($($ordinal)*) as u64;
+	($($index:expr)*, $($p1:expr)*, $($p2:expr)*, $($p3:expr)*, $($p4:expr)*, $($p5:expr)*, $($p6:expr)*, $($p7:expr)*, $($p8:expr)*, $($p9:expr)*, $($p10:expr)*, $($p11:expr)*, $($p12:expr)*, $($p13:expr)*) => {{
+		let index: u64 = ($($index)*) as u64;
 		let p1: u64 = ($($p1)*) as u64;
 		let p2: u64 = ($($p2)*) as u64;
 		let p3: u64 = ($($p3)*) as u64;
@@ -1867,13 +1865,13 @@ macro_rules! syscall_x86_emulated {
 			);
 			asm!(
 				// Prepare stack spill space
-				"mov dword ptr [ecx + 0x00], {ordinal_lo}",
-				"mov dword ptr [ecx + 0x04], {ordinal_hi}",
+				"mov dword ptr [ecx + 0x00], {index_lo}",
+				"mov dword ptr [ecx + 0x04], {index_hi}",
 				"mov dword ptr [ecx + 0x08], {p1_lo}",
 				"mov dword ptr [ecx + 0x0c], {p1_hi}",
 
-				ordinal_lo = in(reg) ::nt_syscall::lo!(ordinal),
-				ordinal_hi = in(reg) ::nt_syscall::hi!(ordinal),
+				index_lo = in(reg) ::nt_syscall::lo!(index),
+				index_hi = in(reg) ::nt_syscall::hi!(index),
 				p1_lo = in(reg) ::nt_syscall::lo!(p1),
 				p1_hi = in(reg) ::nt_syscall::hi!(p1),
 				in("ecx") aligned,
@@ -1998,7 +1996,7 @@ macro_rules! syscall_x86_emulated {
 
 #[macro_export]
 macro_rules! syscall_x86 {
-	($($ordinal:expr)*) => {{
+	($($index:expr)*) => {{
 		let mut status: u32 = 0;
 		asm!(
 			"sub esp, 0x4",
@@ -2010,14 +2008,14 @@ macro_rules! syscall_x86 {
 			"sysenter",
 			"add esp, 0x04",
 
-			in("eax") ($($ordinal)*) as u32,
+			in("eax") ($($index)*) as u32,
 			lateout("ecx") _,
 			lateout("edx") _,
 			lateout("eax") status,
 		);
 		status
 	}};
-	($($ordinal:expr)*, $($p1:expr)*) => {{
+	($($index:expr)*, $($p1:expr)*) => {{
 		let mut status: u32 = 0;
 		asm!(
 			"push {p1:e}",
@@ -2032,14 +2030,14 @@ macro_rules! syscall_x86 {
 
 			p1 = in(reg) ($($p1)*) as u32,
 
-			in("eax") ($($ordinal)*) as u32,
+			in("eax") ($($index)*) as u32,
 			lateout("ecx") _,
 			lateout("edx") _,
 			lateout("eax") status,
 		);
 		status
 	}};
-	($($ordinal:expr)*, $($p1:expr)*, $($p2:expr)*) => {{
+	($($index:expr)*, $($p1:expr)*, $($p2:expr)*) => {{
 		let mut status: u32 = 0;
 		asm!(
 			"push {p2:e}",
@@ -2056,14 +2054,14 @@ macro_rules! syscall_x86 {
 			p2 = in(reg) ($($p2)*) as u32,
 			p1 = in(reg) ($($p1)*) as u32,
 
-			in("eax") ($($ordinal)*) as u32,
+			in("eax") ($($index)*) as u32,
 			lateout("ecx") _,
 			lateout("edx") _,
 			lateout("eax") status,
 		);
 		status
 	}};
-	($($ordinal:expr)*, $($p1:expr)*, $($p2:expr)*, $($p3:expr)*) => {{
+	($($index:expr)*, $($p1:expr)*, $($p2:expr)*, $($p3:expr)*) => {{
 		let mut status: u32 = 0;
 		asm!(
 			"push {p3:e}",
@@ -2082,14 +2080,14 @@ macro_rules! syscall_x86 {
 			p2 = in(reg) ($($p2)*) as u32,
 			p1 = in(reg) ($($p1)*) as u32,
 
-			in("eax") ($($ordinal)*) as u32,
+			in("eax") ($($index)*) as u32,
 			lateout("ecx") _,
 			lateout("edx") _,
 			lateout("eax") status,
 		);
 		status
 	}};
-	($($ordinal:expr)*, $($p1:expr)*, $($p2:expr)*, $($p3:expr)*, $($p4:expr)*) => {{
+	($($index:expr)*, $($p1:expr)*, $($p2:expr)*, $($p3:expr)*, $($p4:expr)*) => {{
 		let mut status: u32 = 0;
 		asm!(
 			"push {p4:e}",
@@ -2110,14 +2108,14 @@ macro_rules! syscall_x86 {
 			p2 = in(reg) ($($p2)*) as u32,
 			p1 = in(reg) ($($p1)*) as u32,
 
-			in("eax") ($($ordinal)*) as u32,
+			in("eax") ($($index)*) as u32,
 			lateout("ecx") _,
 			lateout("edx") _,
 			lateout("eax") status,
 		);
 		status
 	}};
-	($($ordinal:expr)*, $($p1:expr)*, $($p2:expr)*, $($p3:expr)*, $($p4:expr)*, $($p5:expr)*) => {{
+	($($index:expr)*, $($p1:expr)*, $($p2:expr)*, $($p3:expr)*, $($p4:expr)*, $($p5:expr)*) => {{
 		let mut status: u32 = 0;
 		asm!(
 			"push {p5:e}",
@@ -2143,14 +2141,14 @@ macro_rules! syscall_x86 {
 			p2 = in(reg) ($($p2)*) as u32,
 			p1 = in(reg) ($($p1)*) as u32,
 
-			in("eax") ($($ordinal)*) as u32,
+			in("eax") ($($index)*) as u32,
 			lateout("ecx") _,
 			lateout("edx") _,
 			lateout("eax") status,
 		);
 		status
 	}};
-	($($ordinal:expr)*, $($p1:expr)*, $($p2:expr)*, $($p3:expr)*, $($p4:expr)*, $($p5:expr)*, $($p6:expr)*) => {{
+	($($index:expr)*, $($p1:expr)*, $($p2:expr)*, $($p3:expr)*, $($p4:expr)*, $($p5:expr)*, $($p6:expr)*) => {{
 		let mut status: u32 = 0;
 		asm!(
 			"push {p6:e}",
@@ -2178,14 +2176,14 @@ macro_rules! syscall_x86 {
 			p2 = in(reg) ($($p2)*) as u32,
 			p1 = in(reg) ($($p1)*) as u32,
 
-			in("eax") ($($ordinal)*) as u32,
+			in("eax") ($($index)*) as u32,
 			lateout("ecx") _,
 			lateout("edx") _,
 			lateout("eax") status,
 		);
 		status
 	}};
-	($($ordinal:expr)*, $($p1:expr)*, $($p2:expr)*, $($p3:expr)*, $($p4:expr)*, $($p5:expr)*, $($p6:expr)*, $($p7:expr)*) => {{
+	($($index:expr)*, $($p1:expr)*, $($p2:expr)*, $($p3:expr)*, $($p4:expr)*, $($p5:expr)*, $($p6:expr)*, $($p7:expr)*) => {{
 		let mut status: u32 = 0;
 		asm!(
 			"push {p7:e}",
@@ -2215,14 +2213,14 @@ macro_rules! syscall_x86 {
 			p2 = in(reg) ($($p2)*) as u32,
 			p1 = in(reg) ($($p1)*) as u32,
 
-			in("eax") ($($ordinal)*) as u32,
+			in("eax") ($($index)*) as u32,
 			lateout("ecx") _,
 			lateout("edx") _,
 			lateout("eax") status,
 		);
 		status
 	}};
-	($($ordinal:expr)*, $($p1:expr)*, $($p2:expr)*, $($p3:expr)*, $($p4:expr)*, $($p5:expr)*, $($p6:expr)*, $($p7:expr)*, $($p8:expr)*) => {{
+	($($index:expr)*, $($p1:expr)*, $($p2:expr)*, $($p3:expr)*, $($p4:expr)*, $($p5:expr)*, $($p6:expr)*, $($p7:expr)*, $($p8:expr)*) => {{
 		let mut status: u32 = 0;
 		asm!(
 			"push {p8:e}",
@@ -2254,14 +2252,14 @@ macro_rules! syscall_x86 {
 			p2 = in(reg) ($($p2)*) as u32,
 			p1 = in(reg) ($($p1)*) as u32,
 
-			in("eax") ($($ordinal)*) as u32,
+			in("eax") ($($index)*) as u32,
 			lateout("ecx") _,
 			lateout("edx") _,
 			lateout("eax") status,
 		);
 		status
 	}};
-	($($ordinal:expr)*, $($p1:expr)*, $($p2:expr)*, $($p3:expr)*, $($p4:expr)*, $($p5:expr)*, $($p6:expr)*, $($p7:expr)*, $($p8:expr)*, $($p9:expr)*) => {{
+	($($index:expr)*, $($p1:expr)*, $($p2:expr)*, $($p3:expr)*, $($p4:expr)*, $($p5:expr)*, $($p6:expr)*, $($p7:expr)*, $($p8:expr)*, $($p9:expr)*) => {{
 		let mut status: u32 = 0;
 		asm!(
 			"push {p9:e}",
@@ -2295,14 +2293,14 @@ macro_rules! syscall_x86 {
 			p2 = in(reg) ($($p2)*) as u32,
 			p1 = in(reg) ($($p1)*) as u32,
 
-			in("eax") ($($ordinal)*) as u32,
+			in("eax") ($($index)*) as u32,
 			lateout("ecx") _,
 			lateout("edx") _,
 			lateout("eax") status,
 		);
 		status
 	}};
-	($($ordinal:expr)*, $($p1:expr)*, $($p2:expr)*, $($p3:expr)*, $($p4:expr)*, $($p5:expr)*, $($p6:expr)*, $($p7:expr)*, $($p8:expr)*, $($p9:expr)*, $($p10:expr)*) => {{
+	($($index:expr)*, $($p1:expr)*, $($p2:expr)*, $($p3:expr)*, $($p4:expr)*, $($p5:expr)*, $($p6:expr)*, $($p7:expr)*, $($p8:expr)*, $($p9:expr)*, $($p10:expr)*) => {{
 		let mut status: u32 = 0;
 		asm!(
 			"push {p10:e}",
@@ -2338,14 +2336,14 @@ macro_rules! syscall_x86 {
 			p2 = in(reg) ($($p2)*) as u32,
 			p1 = in(reg) ($($p1)*) as u32,
 
-			in("eax") ($($ordinal)*) as u32,
+			in("eax") ($($index)*) as u32,
 			lateout("ecx") _,
 			lateout("edx") _,
 			lateout("eax") status,
 		);
 		status
 	}};
-	($($ordinal:expr)*, $($p1:expr)*, $($p2:expr)*, $($p3:expr)*, $($p4:expr)*, $($p5:expr)*, $($p6:expr)*, $($p7:expr)*, $($p8:expr)*, $($p9:expr)*, $($p10:expr)*, $($p11:expr)*) => {{
+	($($index:expr)*, $($p1:expr)*, $($p2:expr)*, $($p3:expr)*, $($p4:expr)*, $($p5:expr)*, $($p6:expr)*, $($p7:expr)*, $($p8:expr)*, $($p9:expr)*, $($p10:expr)*, $($p11:expr)*) => {{
 		let mut status: u32 = 0;
 		asm!(
 			"push {p11:e}",
@@ -2386,14 +2384,14 @@ macro_rules! syscall_x86 {
 			p2 = in(reg) ($($p2)*) as u32,
 			p1 = in(reg) ($($p1)*) as u32,
 
-			in("eax") ($($ordinal)*) as u32,
+			in("eax") ($($index)*) as u32,
 			lateout("ecx") _,
 			lateout("edx") _,
 			lateout("eax") status,
 		);
 		status
 	}};
-	($($ordinal:expr)*, $($p1:expr)*, $($p2:expr)*, $($p3:expr)*, $($p4:expr)*, $($p5:expr)*, $($p6:expr)*, $($p7:expr)*, $($p8:expr)*, $($p9:expr)*, $($p10:expr)*, $($p11:expr)*, $($p12:expr)*) => {{
+	($($index:expr)*, $($p1:expr)*, $($p2:expr)*, $($p3:expr)*, $($p4:expr)*, $($p5:expr)*, $($p6:expr)*, $($p7:expr)*, $($p8:expr)*, $($p9:expr)*, $($p10:expr)*, $($p11:expr)*, $($p12:expr)*) => {{
 		let mut status: u32 = 0;
 		asm!(
 			"push {p12:e}",
@@ -2436,14 +2434,14 @@ macro_rules! syscall_x86 {
 			p2 = in(reg) ($($p2)*) as u32,
 			p1 = in(reg) ($($p1)*) as u32,
 
-			in("eax") ($($ordinal)*) as u32,
+			in("eax") ($($index)*) as u32,
 			lateout("ecx") _,
 			lateout("edx") _,
 			lateout("eax") status,
 		);
 		status
 	}};
-	($($ordinal:expr)*, $($p1:expr)*, $($p2:expr)*, $($p3:expr)*, $($p4:expr)*, $($p5:expr)*, $($p6:expr)*, $($p7:expr)*, $($p8:expr)*, $($p9:expr)*, $($p10:expr)*, $($p11:expr)*, $($p12:expr)*, $($p13:expr)*) => {{
+	($($index:expr)*, $($p1:expr)*, $($p2:expr)*, $($p3:expr)*, $($p4:expr)*, $($p5:expr)*, $($p6:expr)*, $($p7:expr)*, $($p8:expr)*, $($p9:expr)*, $($p10:expr)*, $($p11:expr)*, $($p12:expr)*, $($p13:expr)*) => {{
 		let mut status: u32 = 0;
 		asm!(
 			"push {p13:e}",
@@ -2488,7 +2486,7 @@ macro_rules! syscall_x86 {
 			p2 = in(reg) ($($p2)*) as u32,
 			p1 = in(reg) ($($p1)*) as u32,
 
-			in("eax") ($($ordinal)*) as u32,
+			in("eax") ($($index)*) as u32,
 			lateout("ecx") _,
 			lateout("edx") _,
 			lateout("eax") status,
