@@ -1,3 +1,12 @@
+#[cfg(feature = "windows_11_21h2")]
+pub mod windows_11_21h2;
+
+#[cfg(feature = "windows_10_21h2")]
+pub mod windows_10_21h2;
+
+#[cfg(feature = "windows_10_21h1")]
+pub mod windows_10_21h1;
+
 #[cfg(feature = "windows_10_20h2")]
 pub mod windows_10_20h2;
 
@@ -79,14 +88,14 @@ pub mod windows_server_2003_r2;
 #[cfg(feature = "windows_server_2003_sp2")]
 pub mod windows_server_2003_sp2;
 
-//#[cfg(feature = "windows_server_2003_sp1")]
-//pub mod windows_server_2003_sp1;
+#[cfg(feature = "windows_server_2003_sp1")]
+pub use super::invalid as windows_server_2003_sp1;
 
 #[cfg(feature = "windows_server_2003_sp0")]
 pub mod windows_server_2003_sp0;
 
-//#[cfg(feature = "windows_xp_sp3")]
-//pub mod windows_xp_sp3;
+#[cfg(feature = "windows_xp_sp3")]
+pub use super::invalid as windows_xp_sp3;
 
 #[cfg(feature = "windows_xp_sp2")]
 pub mod windows_xp_sp2;
@@ -94,5 +103,5 @@ pub mod windows_xp_sp2;
 #[cfg(feature = "windows_xp_sp1")]
 pub mod windows_xp_sp1;
 
-//#[cfg(feature = "windows_xp_sp0")]
-//pub mod windows_xp_sp0;
+#[cfg(feature = "windows_xp_sp0")]
+pub use super::invalid as windows_xp_sp0;

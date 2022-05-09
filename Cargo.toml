@@ -12,13 +12,19 @@ version = "0.3.6"
 [features]
 default = [
 	"nt",
-	"windows_10_20h2",
+	"windows_11",
+	"windows_10",
 ]
 
+# For nt syscalls such as NtCreateThread
 nt = []
+# For win32k or win32u suscalls such as NtGdiInit
 win32 = []
 
+
+# Windows release builds
 all = [
+	"windows_11",
 	"windows_10",
 	"windows_8",
 	"windows_server_2012",
@@ -31,6 +37,14 @@ all = [
 	"windows_nt",
 ]
 
+
+windows_11_21h2 = []
+windows_11 = [
+	"windows_11_21h2",
+]
+
+windows_10_21h2 = []
+windows_10_21h1 = []
 windows_10_20h2 = []
 windows_10_2004 = []
 windows_10_1909 = []
@@ -43,6 +57,8 @@ windows_10_1607 = []
 windows_10_1511 = []
 windows_10_1507 = []
 windows_10 = [
+	"windows_10_21h2",
+	"windows_10_21h1",
 	"windows_10_20h2",
 	"windows_10_2004",
 	"windows_10_1909",

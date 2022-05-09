@@ -64,48 +64,51 @@ macro_rules! _get_indices_internal {
 		let build = unsafe {
 			::nt_syscall::peb!().OSBuildNumber
 		};
+		::nt_syscall::_get_indices_internal(build, $arch, $( $( $indices )* ),* )
+	}};
+	( $build:expr, $arch:ident, $( $( $indices:ident )* ),* ) => {{
 		let mut value = [ $(::nt_syscall::indices::invalid::$( $indices )* ),* ];
 
-		::nt_syscall::windows_10_20h2!($arch, build, value, $( $( $indices )* ),*);
-		::nt_syscall::windows_10_2004!($arch, build, value, $( $( $indices )* ),*);
-		::nt_syscall::windows_10_1909!($arch, build, value, $( $( $indices )* ),*);
-		::nt_syscall::windows_10_1903!($arch, build, value, $( $( $indices )* ),*);
-		::nt_syscall::windows_10_1809!($arch, build, value, $( $( $indices )* ),*);
-		::nt_syscall::windows_10_1803!($arch, build, value, $( $( $indices )* ),*);
-		::nt_syscall::windows_10_1709!($arch, build, value, $( $( $indices )* ),*);
-		::nt_syscall::windows_10_1703!($arch, build, value, $( $( $indices )* ),*);
-		::nt_syscall::windows_10_1607!($arch, build, value, $( $( $indices )* ),*);
-		::nt_syscall::windows_10_1511!($arch, build, value, $( $( $indices )* ),*);
-		::nt_syscall::windows_10_1507!($arch, build, value, $( $( $indices )* ),*);
+		::nt_syscall::windows_10_20h2!($arch, $build, value, $( $( $indices )* ),*);
+		::nt_syscall::windows_10_2004!($arch, $build, value, $( $( $indices )* ),*);
+		::nt_syscall::windows_10_1909!($arch, $build, value, $( $( $indices )* ),*);
+		::nt_syscall::windows_10_1903!($arch, $build, value, $( $( $indices )* ),*);
+		::nt_syscall::windows_10_1809!($arch, $build, value, $( $( $indices )* ),*);
+		::nt_syscall::windows_10_1803!($arch, $build, value, $( $( $indices )* ),*);
+		::nt_syscall::windows_10_1709!($arch, $build, value, $( $( $indices )* ),*);
+		::nt_syscall::windows_10_1703!($arch, $build, value, $( $( $indices )* ),*);
+		::nt_syscall::windows_10_1607!($arch, $build, value, $( $( $indices )* ),*);
+		::nt_syscall::windows_10_1511!($arch, $build, value, $( $( $indices )* ),*);
+		::nt_syscall::windows_10_1507!($arch, $build, value, $( $( $indices )* ),*);
 
-		::nt_syscall::windows_8_1!($arch, build, value, $( $( $indices )* ),*);
-		::nt_syscall::windows_8_0!($arch, build, value, $( $( $indices )* ),*);
+		::nt_syscall::windows_8_1!($arch, $build, value, $( $( $indices )* ),*);
+		::nt_syscall::windows_8_0!($arch, $build, value, $( $( $indices )* ),*);
 
-		::nt_syscall::windows_server_2012_r2!($arch, build, value, $( $( $indices )* ),*);
-		::nt_syscall::windows_server_2012_sp0!($arch, build, value, $( $( $indices )* ),*);
+		::nt_syscall::windows_server_2012_r2!($arch, $build, value, $( $( $indices )* ),*);
+		::nt_syscall::windows_server_2012_sp0!($arch, $build, value, $( $( $indices )* ),*);
 
-		::nt_syscall::windows_7_sp1!($arch, build, value, $( $( $indices )* ),*);
-		::nt_syscall::windows_7_sp0!($arch, build, value, $( $( $indices )* ),*);
+		::nt_syscall::windows_7_sp1!($arch, $build, value, $( $( $indices )* ),*);
+		::nt_syscall::windows_7_sp0!($arch, $build, value, $( $( $indices )* ),*);
 
-		::nt_syscall::windows_server_2008_r2_sp1!($arch, build, value, $( $( $indices )* ),*);
-		::nt_syscall::windows_server_2008_r2!($arch, build, value, $( $( $indices )* ),*);
-		::nt_syscall::windows_server_2008_sp2!($arch, build, value, $( $( $indices )* ),*);
-		::nt_syscall::windows_server_2008_sp0!($arch, build, value, $( $( $indices )* ),*);
+		::nt_syscall::windows_server_2008_r2_sp1!($arch, $build, value, $( $( $indices )* ),*);
+		::nt_syscall::windows_server_2008_r2!($arch, $build, value, $( $( $indices )* ),*);
+		::nt_syscall::windows_server_2008_sp2!($arch, $build, value, $( $( $indices )* ),*);
+		::nt_syscall::windows_server_2008_sp0!($arch, $build, value, $( $( $indices )* ),*);
 
-		::nt_syscall::windows_vista_sp2!($arch, build, value, $( $( $indices )* ),*);
-		::nt_syscall::windows_vista_sp1!($arch, build, value, $( $( $indices )* ),*);
-		::nt_syscall::windows_vista_sp0!($arch, build, value, $( $( $indices )* ),*);
+		::nt_syscall::windows_vista_sp2!($arch, $build, value, $( $( $indices )* ),*);
+		::nt_syscall::windows_vista_sp1!($arch, $build, value, $( $( $indices )* ),*);
+		::nt_syscall::windows_vista_sp0!($arch, $build, value, $( $( $indices )* ),*);
 
-		::nt_syscall::windows_server_2003_r2_sp2!($arch, build, value, $( $( $indices )* ),*);
-		::nt_syscall::windows_server_2003_r2!($arch, build, value, $( $( $indices )* ),*);
-		::nt_syscall::windows_server_2003_sp2!($arch, build, value, $( $( $indices )* ),*);
-		::nt_syscall::windows_server_2003_sp1!($arch, build, value, $( $( $indices )* ),*);
-		::nt_syscall::windows_server_2003_sp0!($arch, build, value, $( $( $indices )* ),*);
+		::nt_syscall::windows_server_2003_r2_sp2!($arch, $build, value, $( $( $indices )* ),*);
+		::nt_syscall::windows_server_2003_r2!($arch, $build, value, $( $( $indices )* ),*);
+		::nt_syscall::windows_server_2003_sp2!($arch, $build, value, $( $( $indices )* ),*);
+		::nt_syscall::windows_server_2003_sp1!($arch, $build, value, $( $( $indices )* ),*);
+		::nt_syscall::windows_server_2003_sp0!($arch, $build, value, $( $( $indices )* ),*);
 
-		::nt_syscall::windows_xp_sp3!($arch, build, value, $( $( $indices )* ),*);
-		::nt_syscall::windows_xp_sp2!($arch, build, value, $( $( $indices )* ),*);
-		::nt_syscall::windows_xp_sp1!($arch, build, value, $( $( $indices )* ),*);
-		::nt_syscall::windows_xp_sp0!($arch, build, value, $( $( $indices )* ),*);
+		::nt_syscall::windows_xp_sp3!($arch, $build, value, $( $( $indices )* ),*);
+		::nt_syscall::windows_xp_sp2!($arch, $build, value, $( $( $indices )* ),*);
+		::nt_syscall::windows_xp_sp1!($arch, $build, value, $( $( $indices )* ),*);
+		::nt_syscall::windows_xp_sp0!($arch, $build, value, $( $( $indices )* ),*);
 
 		value
 	}};
@@ -115,12 +118,18 @@ macro_rules! _get_indices_internal {
 macro_rules! get_indices_x64 {
 	( $( $( $indices:ident )* ),* ) => {{
 		::nt_syscall::_get_indices_internal!(x64, $( $( $indices )* ),* )
+	}};
+	( $build:expr, $( $( $indices:ident )* ),* ) => {{
+		::nt_syscall::_get_indices_internal!($build, x64, $( $( $indices )* ),* )
 	}}
 }
 #[macro_export]
 macro_rules! get_indices_x86 {
 	( $( $( $indices:ident )* ),* ) => {{
 		::nt_syscall::_get_indices_internal!(x86, $( $( $indices )* ),* )
+	}};
+	( $build:expr, $( $( $indices:ident )* ),* ) => {{
+		::nt_syscall::_get_indices_internal!($build, x86, $( $( $indices )* ),* )
 	}}
 }
 
@@ -130,6 +139,9 @@ macro_rules! get_indices {
 	( $( $( $indices:ident )* ),* ) => {{
 		::nt_syscall::get_indices_x64!( $( $( $indices )* ),* )
 	}};
+	( $build:expr, $( $( $indices:ident )* ),* ) => {{
+		::nt_syscall::get_indices_x64!($build, $( $( $indices )* ),* )
+	}}
 }
 #[macro_export]
 #[cfg(target_arch="x86")]
@@ -141,6 +153,19 @@ macro_rules! get_indices {
 			}
 			::nt_syscall::CpuMode::NativeX86 => {
 				::nt_syscall::get_indices_x86!( $( $( $indices )* ),* )
+			}
+			_ => {
+				[ $(::nt_syscall::indices::invalid::$( $indices )* ),* ]
+			}
+		}
+	}};
+	( $build:expr, $( $( $indices:ident )* ),* ) => {{
+		match ::nt_syscall::cpu_mode!() {
+			::nt_syscall::CpuMode::EmulatedX86 => {
+				::nt_syscall::get_indices_x64!($build, $( $( $indices )* ),* )
+			}
+			::nt_syscall::CpuMode::NativeX86 => {
+				::nt_syscall::get_indices_x86!($build, $( $( $indices )* ),* )
 			}
 			_ => {
 				[ $(::nt_syscall::indices::invalid::$( $indices )* ),* ]
@@ -188,6 +213,9 @@ macro_rules! add_version {
 	};
 }
 
+add_version!(22000, windows_11_21h2, "windows_10_21h2");
+add_version!(19044, windows_10_21h2, "windows_10_21h2");
+add_version!(19043, windows_10_21h1, "windows_10_21h1");
 add_version!(19042, windows_10_20h2, "windows_10_20h2");
 add_version!(19041, windows_10_2004, "windows_10_2004");
 add_version!(18363, windows_10_1909, "windows_10_1909");

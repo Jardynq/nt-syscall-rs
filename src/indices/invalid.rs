@@ -1,5 +1,7 @@
-#[cfg(feature = "nt")] pub use nt::*;
-#[cfg(feature = "nt")] mod nt {
+#[cfg(feature = "nt")]
+pub use nt::*;
+#[cfg(feature = "nt")]
+mod nt {
 	pub const NtAcceptConnectPort: u32 = u32::MAX;
 	pub const NtAccessCheck: u32 = u32::MAX;
 	pub const NtAccessCheckAndAuditAlarm: u32 = u32::MAX;
@@ -509,8 +511,10 @@
 
 
 
-#[cfg(feature = "win32")] pub use win32::*;
-#[cfg(feature = "win32")] mod win32 {
+#[cfg(feature = "win32")]
+pub use win32::*;
+#[cfg(feature = "win32")]
+mod win32 {
 	pub const NtBindCompositionSurface: u32 = u32::MAX;
 	pub const NtCloseCompositionInputSink: u32 = u32::MAX;
 	pub const NtCompositionInputThread: u32 = u32::MAX;

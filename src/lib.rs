@@ -9,6 +9,7 @@ mod version;
 pub use version::*;
 
 
+// TODO: dynamically find indices by reading ntdll
 
 
 #[derive(Clone, Copy, Debug, PartialEq)]
