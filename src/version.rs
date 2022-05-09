@@ -3,7 +3,7 @@
 macro_rules! teb {
 	() => {{
 		let mut teb: *mut ::ntapi::ntpebteb::TEB;
-		core::arch::asm!(
+		::core::arch::asm!(
 			"mov rax, gs:[0x30]",
 			out("rax") teb
 		);
@@ -15,7 +15,7 @@ macro_rules! teb {
 macro_rules! teb {
 	() => {{
 		let mut teb: *mut ::ntapi::ntpebteb::TEB;
-		asm!(
+		core::arch::asm!(
 			"mov eax, fs:[0x18]",
 			out("eax") teb
 		);
@@ -37,7 +37,7 @@ macro_rules! teb_x64 {
 		let mut teb: *mut ::ntapi::ntpebteb::TEB;
 		if ::nt_syscall::is_emulated!() {
 			::nt_syscall::enter_x64!();
-			asm!(
+			core::arch::asm!(
 				"mov rax, gs:[0x30]",
 				out("rax") teb
 			);
@@ -59,16 +59,14 @@ macro_rules! peb {
 
 
 #[macro_export]
-macro_rules! _get_indices_internal {
-	( $arch:ident, $( $( $indices:ident )* ),* ) => {{
-		let build = unsafe {
-			::nt_syscall::peb!().OSBuildNumber
-		};
-		::nt_syscall::_get_indices_internal(build, $arch, $( $( $indices )* ),* )
-	}};
+macro_rules! _get_indices_from_build {
 	( $build:expr, $arch:ident, $( $( $indices:ident )* ),* ) => {{
 		let mut value = [ $(::nt_syscall::indices::invalid::$( $indices )* ),* ];
 
+		::nt_syscall::windows_11_21h2!($arch, $build, value, $( $( $indices )* ),*);
+
+		::nt_syscall::windows_10_21h2!($arch, $build, value, $( $( $indices )* ),*);
+		::nt_syscall::windows_10_21h1!($arch, $build, value, $( $( $indices )* ),*);
 		::nt_syscall::windows_10_20h2!($arch, $build, value, $( $( $indices )* ),*);
 		::nt_syscall::windows_10_2004!($arch, $build, value, $( $( $indices )* ),*);
 		::nt_syscall::windows_10_1909!($arch, $build, value, $( $( $indices )* ),*);
@@ -114,23 +112,34 @@ macro_rules! _get_indices_internal {
 	}};
 }
 
+
+#[macro_export]
+macro_rules! _get_indices {
+	( $arch:ident, $( $( $indices:ident )* ),* ) => {{
+		let build = unsafe {
+			::nt_syscall::peb!().OSBuildNumber
+		};
+		::nt_syscall::_get_indices_from_build!(build, $arch, $( $( $indices )* ),* )
+	}};
+}
+
 #[macro_export]
 macro_rules! get_indices_x64 {
 	( $( $( $indices:ident )* ),* ) => {{
-		::nt_syscall::_get_indices_internal!(x64, $( $( $indices )* ),* )
+		::nt_syscall::_get_indices!(x64, $( $( $indices )* ),* )
 	}};
 	( $build:expr, $( $( $indices:ident )* ),* ) => {{
-		::nt_syscall::_get_indices_internal!($build, x64, $( $( $indices )* ),* )
-	}}
+		::nt_syscall::_get_indices_from_build!($build, x64, $( $( $indices )* ),* )
+	}};
 }
 #[macro_export]
 macro_rules! get_indices_x86 {
 	( $( $( $indices:ident )* ),* ) => {{
-		::nt_syscall::_get_indices_internal!(x86, $( $( $indices )* ),* )
+		::nt_syscall::_get_indices!(x86, $( $( $indices )* ),* )
 	}};
 	( $build:expr, $( $( $indices:ident )* ),* ) => {{
-		::nt_syscall::_get_indices_internal!($build, x86, $( $( $indices )* ),* )
-	}}
+		::nt_syscall::_get_indices_from_build!($build, x86, $( $( $indices )* ),* )
+	}};
 }
 
 #[macro_export]
@@ -141,7 +150,7 @@ macro_rules! get_indices {
 	}};
 	( $build:expr, $( $( $indices:ident )* ),* ) => {{
 		::nt_syscall::get_indices_x64!($build, $( $( $indices )* ),* )
-	}}
+	}};
 }
 #[macro_export]
 #[cfg(target_arch="x86")]

@@ -23,7 +23,7 @@ pub enum CpuMode {
 macro_rules! cpu_mode {
 	() => { unsafe {
 		let mut cs: u16;
-		asm!(
+		core::arch::asm!(
 			"mov ax, cs",
 			out("ax") cs,
 			options(pure, nomem, nostack, preserves_flags),
@@ -45,7 +45,7 @@ macro_rules! cpu_mode {
 #[macro_export]
 macro_rules! enter_x64 {
 	() => {
-		asm!(
+		core::arch::asm!(
 			"push 0x33",
 			// call $0
 			".byte 0xe8", ".byte 0x00", ".byte 0x00", ".byte 0x00", ".byte 0x00",
@@ -62,7 +62,7 @@ macro_rules! enter_x64 {
 #[macro_export]
 macro_rules! enter_x86 {
 	() => {
-		asm!(
+		core::arch::asm!(
 			// call $0
 			".byte 0xe8", ".byte 0x00", ".byte 0x00", ".byte 0x00", ".byte 0x00",
 			// mov dword ptr [rsp + 0x4], 0x23
@@ -124,7 +124,7 @@ macro_rules! syscall {
 macro_rules! syscall_x64 {
 	($($index:expr)*) => {{
 		let mut status: u64;
-		asm!(
+		core::arch::asm!(
 			"sub rsp, 0x30",
 			"syscall",
 			"add rsp, 0x30",
@@ -143,7 +143,7 @@ macro_rules! syscall_x64 {
 	}};
 	($($index:expr)*, $($p1:expr)*) => {{
 		let mut status: u64;
-		asm!(
+		core::arch::asm!(
 			"sub rsp, 0x30",
 			"syscall",
 			"add rsp, 0x30",
@@ -163,7 +163,7 @@ macro_rules! syscall_x64 {
 	}};
 	($($index:expr)*, $($p1:expr)*, $($p2:expr)*) => {{
 		let mut status: u64;
-		asm!(
+		core::arch::asm!(
 			"sub rsp, 0x30",
 			"syscall",
 			"add rsp, 0x30",
@@ -184,7 +184,7 @@ macro_rules! syscall_x64 {
 	}};
 	($($index:expr)*, $($p1:expr)*, $($p2:expr)*, $($p3:expr)*) => {{
 		let mut status: u64;
-		asm!(
+		core::arch::asm!(
 			"sub rsp, 0x30",
 			"syscall",
 			"add rsp, 0x30",
@@ -206,7 +206,7 @@ macro_rules! syscall_x64 {
 	}};
 	($($index:expr)*, $($p1:expr)*, $($p2:expr)*, $($p3:expr)*, $($p4:expr)*) => {{
 		let mut status: u64;
-		asm!(
+		core::arch::asm!(
 			"sub rsp, 0x30",
 			"syscall",
 			"add rsp, 0x30",
@@ -229,7 +229,7 @@ macro_rules! syscall_x64 {
 	}};
 	($($index:expr)*, $($p1:expr)*, $($p2:expr)*, $($p3:expr)*, $($p4:expr)*, $($p5:expr)*) => {{
 		let mut status: u64;
-		asm!(
+		core::arch::asm!(
 			"sub rsp, 0x30",
 			"mov qword ptr [rsp + 0x28], {p5}",
 
@@ -256,7 +256,7 @@ macro_rules! syscall_x64 {
 	}};
 	($($index:expr)*, $($p1:expr)*, $($p2:expr)*, $($p3:expr)*, $($p4:expr)*, $($p5:expr)*, $($p6:expr)*) => {{
 		let mut status: u64;
-		asm!(
+		core::arch::asm!(
 			"sub rsp, 0x40",
 			"mov qword ptr [rsp + 0x28], {p5}",
 			"mov qword ptr [rsp + 0x30], {p6}",
@@ -285,7 +285,7 @@ macro_rules! syscall_x64 {
 	}};
 	($($index:expr)*, $($p1:expr)*, $($p2:expr)*, $($p3:expr)*, $($p4:expr)*, $($p5:expr)*, $($p6:expr)*, $($p7:expr)*) => {{
 		let mut status: u64;
-		asm!(
+		core::arch::asm!(
 			"sub rsp, 0x40",
 			"mov qword ptr [rsp + 0x28], {p5}",
 			"mov qword ptr [rsp + 0x30], {p6}",
@@ -316,7 +316,7 @@ macro_rules! syscall_x64 {
 	}};
 	($($index:expr)*, $($p1:expr)*, $($p2:expr)*, $($p3:expr)*, $($p4:expr)*, $($p5:expr)*, $($p6:expr)*, $($p7:expr)*, $($p8:expr)*) => {{
 		let mut status: u64;
-		asm!(
+		core::arch::asm!(
 			"sub rsp, 0x50",
 			"mov qword ptr [rsp + 0x28], {p5}",
 			"mov qword ptr [rsp + 0x30], {p6}",
@@ -349,7 +349,7 @@ macro_rules! syscall_x64 {
 	}};
 	($($index:expr)*, $($p1:expr)*, $($p2:expr)*, $($p3:expr)*, $($p4:expr)*, $($p5:expr)*, $($p6:expr)*, $($p7:expr)*, $($p8:expr)*, $($p9:expr)*) => {{
 		let mut status: u64;
-		asm!(
+		core::arch::asm!(
 			"sub rsp, 0x50",
 			"mov qword ptr [rsp + 0x28], {p5}",
 			"mov qword ptr [rsp + 0x30], {p6}",
@@ -384,7 +384,7 @@ macro_rules! syscall_x64 {
 	}};
 	($($index:expr)*, $($p1:expr)*, $($p2:expr)*, $($p3:expr)*, $($p4:expr)*, $($p5:expr)*, $($p6:expr)*, $($p7:expr)*, $($p8:expr)*, $($p9:expr)*, $($p10:expr)*) => {{
 		let mut status: u64;
-		asm!(
+		core::arch::asm!(
 			"sub rsp, 0x60",
 			"mov qword ptr [rsp + 0x28], {p5}",
 			"mov qword ptr [rsp + 0x30], {p6}",
@@ -421,7 +421,7 @@ macro_rules! syscall_x64 {
 	}};
 	($($index:expr)*, $($p1:expr)*, $($p2:expr)*, $($p3:expr)*, $($p4:expr)*, $($p5:expr)*, $($p6:expr)*, $($p7:expr)*, $($p8:expr)*, $($p9:expr)*, $($p10:expr)*, $($p11:expr)*) => {{
 		let mut status: u64;
-		asm!(
+		core::arch::asm!(
 			"sub rsp, 0x60",
 			"mov qword ptr [rsp + 0x28], {p5}",
 			"mov qword ptr [rsp + 0x30], {p6}",
@@ -460,7 +460,7 @@ macro_rules! syscall_x64 {
 	}};
 	($($index:expr)*, $($p1:expr)*, $($p2:expr)*, $($p3:expr)*, $($p4:expr)*, $($p5:expr)*, $($p6:expr)*, $($p7:expr)*, $($p8:expr)*, $($p9:expr)*, $($p10:expr)*, $($p11:expr)*, $($p12:expr)*) => {{
 		let mut status: u64;
-		asm!(
+		core::arch::asm!(
 			"sub rsp, 0x70",
 			"mov qword ptr [rsp + 0x28], {p5}",
 			"mov qword ptr [rsp + 0x30], {p6}",
@@ -501,7 +501,7 @@ macro_rules! syscall_x64 {
 	}};
 	($($index:expr)*, $($p1:expr)*, $($p2:expr)*, $($p3:expr)*, $($p4:expr)*, $($p5:expr)*, $($p6:expr)*, $($p7:expr)*, $($p8:expr)*, $($p9:expr)*, $($p10:expr)*, $($p11:expr)*, $($p12:expr)*, $($p13:expr)*) => {{
 		let mut status: u64;
-		asm!(
+		core::arch::asm!(
 			"sub rsp, 0x70",
 			"mov qword ptr [rsp + 0x28], {p5}",
 			"mov qword ptr [rsp + 0x30], {p6}",
@@ -555,7 +555,7 @@ macro_rules! syscall_x86_emulated {
 		let mut aligned: u32;
 		let mut status: u32;
 		unsafe {
-			asm!(
+			core::arch::asm!(
 				// Align copy stack
 				"mov ecx, esp",
 				"and ecx, 0xfffffff0",
@@ -564,7 +564,7 @@ macro_rules! syscall_x86_emulated {
 				out("ecx") aligned,
 				options(pure, nomem, nostack, preserves_flags),
 			);
-			asm!(
+			core::arch::asm!(
 				// Prepare stack spill space
 				"mov dword ptr [ecx + 0x00], {index_lo}",
 				"mov dword ptr [ecx + 0x04], {index_hi}",
@@ -575,7 +575,7 @@ macro_rules! syscall_x86_emulated {
 				options(preserves_flags),
 			);
 			::nt_syscall::enter_x64!();
-			asm!(
+			core::arch::asm!(
 				// Align real stack
 				"mov ebx, esp",
 				"mov esp, ecx",
@@ -609,7 +609,7 @@ macro_rules! syscall_x86_emulated {
 		let mut aligned: u32;
 		let mut status: u32;
 		unsafe {
-			asm!(
+			core::arch::asm!(
 				// Align copy stack
 				"mov ecx, esp",
 				"and ecx, 0xfffffff0",
@@ -618,7 +618,7 @@ macro_rules! syscall_x86_emulated {
 				out("ecx") aligned,
 				options(pure, nomem, nostack, preserves_flags),
 			);
-			asm!(
+			core::arch::asm!(
 				// Prepare stack spill space
 				"mov dword ptr [ecx + 0x00], {index_lo}",
 				"mov dword ptr [ecx + 0x04], {index_hi}",
@@ -633,7 +633,7 @@ macro_rules! syscall_x86_emulated {
 				options(preserves_flags),
 			);
 			::nt_syscall::enter_x64!();
-			asm!(
+			core::arch::asm!(
 				// Align real stack
 				"mov ebx, esp",
 				"mov esp, ecx",
@@ -668,7 +668,7 @@ macro_rules! syscall_x86_emulated {
 		let mut aligned: u32;
 		let mut status: u32;
 		unsafe {
-			asm!(
+			core::arch::asm!(
 				// Align copy stack
 				"mov ecx, esp",
 				"and ecx, 0xfffffff0",
@@ -677,7 +677,7 @@ macro_rules! syscall_x86_emulated {
 				out("ecx") aligned,
 				options(pure, nomem, nostack, preserves_flags),
 			);
-			asm!(
+			core::arch::asm!(
 				// Prepare stack spill space
 				"mov dword ptr [ecx + 0x00], {index_lo}",
 				"mov dword ptr [ecx + 0x04], {index_hi}",
@@ -691,7 +691,7 @@ macro_rules! syscall_x86_emulated {
 				in("ecx") aligned,
 				options(preserves_flags),
 			);
-			asm!(
+			core::arch::asm!(
 				"mov dword ptr [ecx + 0x10], {p2_lo}",
 				"mov dword ptr [ecx + 0x14], {p2_hi}",
 
@@ -701,7 +701,7 @@ macro_rules! syscall_x86_emulated {
 				options(preserves_flags),
 			);
 			::nt_syscall::enter_x64!();
-			asm!(
+			core::arch::asm!(
 				// Align real stack
 				"mov ebx, esp",
 				"mov esp, ecx",
@@ -737,7 +737,7 @@ macro_rules! syscall_x86_emulated {
 		let mut aligned: u32;
 		let mut status: u32;
 		unsafe {
-			asm!(
+			core::arch::asm!(
 				// Align copy stack
 				"mov ecx, esp",
 				"and ecx, 0xfffffff0",
@@ -746,7 +746,7 @@ macro_rules! syscall_x86_emulated {
 				out("ecx") aligned,
 				options(pure, nomem, nostack, preserves_flags),
 			);
-			asm!(
+			core::arch::asm!(
 				// Prepare stack spill space
 				"mov dword ptr [ecx + 0x00], {index_lo}",
 				"mov dword ptr [ecx + 0x04], {index_hi}",
@@ -760,7 +760,7 @@ macro_rules! syscall_x86_emulated {
 				in("ecx") aligned,
 				options(preserves_flags),
 			);
-			asm!(
+			core::arch::asm!(
 				"mov dword ptr [ecx + 0x10], {p2_lo}",
 				"mov dword ptr [ecx + 0x14], {p2_hi}",
 				"mov dword ptr [ecx + 0x18], {p3_lo}",
@@ -774,7 +774,7 @@ macro_rules! syscall_x86_emulated {
 				options(preserves_flags),
 			);
 			::nt_syscall::enter_x64!();
-			asm!(
+			core::arch::asm!(
 				// Align real stack
 				"mov ebx, esp",
 				"mov esp, ecx",
@@ -811,7 +811,7 @@ macro_rules! syscall_x86_emulated {
 		let mut aligned: u32;
 		let mut status: u32;
 		unsafe {
-			asm!(
+			core::arch::asm!(
 				// Align copy stack
 				"mov ecx, esp",
 				"and ecx, 0xfffffff0",
@@ -820,7 +820,7 @@ macro_rules! syscall_x86_emulated {
 				out("ecx") aligned,
 				options(pure, nomem, nostack, preserves_flags),
 			);
-			asm!(
+			core::arch::asm!(
 				// Prepare stack spill space
 				"mov dword ptr [ecx + 0x00], {index_lo}",
 				"mov dword ptr [ecx + 0x04], {index_hi}",
@@ -834,7 +834,7 @@ macro_rules! syscall_x86_emulated {
 				in("ecx") aligned,
 				options(preserves_flags),
 			);
-			asm!(
+			core::arch::asm!(
 				"mov dword ptr [ecx + 0x10], {p2_lo}",
 				"mov dword ptr [ecx + 0x14], {p2_hi}",
 				"mov dword ptr [ecx + 0x18], {p3_lo}",
@@ -847,7 +847,7 @@ macro_rules! syscall_x86_emulated {
 				in("ecx") aligned,
 				options(preserves_flags),
 			);
-			asm!(
+			core::arch::asm!(
 				"mov dword ptr [ecx + 0x20], {p4_lo}",
 				"mov dword ptr [ecx + 0x24], {p4_hi}",
 
@@ -857,7 +857,7 @@ macro_rules! syscall_x86_emulated {
 				options(preserves_flags),
 			);
 			::nt_syscall::enter_x64!();
-			asm!(
+			core::arch::asm!(
 				// Align real stack
 				"mov ebx, esp",
 				"mov esp, ecx",
@@ -895,7 +895,7 @@ macro_rules! syscall_x86_emulated {
 		let mut aligned: u32;
 		let mut status: u32;
 		unsafe {
-			asm!(
+			core::arch::asm!(
 				// Align copy stack
 				"mov ecx, esp",
 				"and ecx, 0xfffffff0",
@@ -904,7 +904,7 @@ macro_rules! syscall_x86_emulated {
 				out("ecx") aligned,
 				options(pure, nomem, nostack, preserves_flags),
 			);
-			asm!(
+			core::arch::asm!(
 				// Prepare stack spill space
 				"mov dword ptr [ecx + 0x00], {index_lo}",
 				"mov dword ptr [ecx + 0x04], {index_hi}",
@@ -918,7 +918,7 @@ macro_rules! syscall_x86_emulated {
 				in("ecx") aligned,
 				options(preserves_flags),
 			);
-			asm!(
+			core::arch::asm!(
 				"mov dword ptr [ecx + 0x10], {p2_lo}",
 				"mov dword ptr [ecx + 0x14], {p2_hi}",
 				"mov dword ptr [ecx + 0x18], {p3_lo}",
@@ -931,7 +931,7 @@ macro_rules! syscall_x86_emulated {
 				in("ecx") aligned,
 				options(preserves_flags),
 			);
-			asm!(
+			core::arch::asm!(
 				"mov dword ptr [ecx + 0x20], {p4_lo}",
 				"mov dword ptr [ecx + 0x24], {p4_hi}",
 
@@ -940,7 +940,7 @@ macro_rules! syscall_x86_emulated {
 				in("ecx") aligned,
 				options(preserves_flags),
 			);
-			asm!(
+			core::arch::asm!(
 				// Prepare used part of the stack
 				"mov dword ptr [ecx + 0x28], {p5_lo}",
 				"mov dword ptr [ecx + 0x2c], {p5_hi}",
@@ -951,7 +951,7 @@ macro_rules! syscall_x86_emulated {
 				options(preserves_flags),
 			);
 			::nt_syscall::enter_x64!();
-			asm!(
+			core::arch::asm!(
 				// Align real stack
 				"mov ebx, esp",
 				"mov esp, ecx",
@@ -990,7 +990,7 @@ macro_rules! syscall_x86_emulated {
 		let mut aligned: u32;
 		let mut status: u32;
 		unsafe {
-			asm!(
+			core::arch::asm!(
 				// Align copy stack
 				"mov ecx, esp",
 				"and ecx, 0xfffffff0",
@@ -999,7 +999,7 @@ macro_rules! syscall_x86_emulated {
 				out("ecx") aligned,
 				options(pure, nomem, nostack, preserves_flags),
 			);
-			asm!(
+			core::arch::asm!(
 				// Prepare stack spill space
 				"mov dword ptr [ecx + 0x00], {index_lo}",
 				"mov dword ptr [ecx + 0x04], {index_hi}",
@@ -1013,7 +1013,7 @@ macro_rules! syscall_x86_emulated {
 				in("ecx") aligned,
 				options(preserves_flags),
 			);
-			asm!(
+			core::arch::asm!(
 				"mov dword ptr [ecx + 0x10], {p2_lo}",
 				"mov dword ptr [ecx + 0x14], {p2_hi}",
 				"mov dword ptr [ecx + 0x18], {p3_lo}",
@@ -1026,7 +1026,7 @@ macro_rules! syscall_x86_emulated {
 				in("ecx") aligned,
 				options(preserves_flags),
 			);
-			asm!(
+			core::arch::asm!(
 				"mov dword ptr [ecx + 0x20], {p4_lo}",
 				"mov dword ptr [ecx + 0x24], {p4_hi}",
 
@@ -1035,7 +1035,7 @@ macro_rules! syscall_x86_emulated {
 				in("ecx") aligned,
 				options(preserves_flags),
 			);
-			asm!(
+			core::arch::asm!(
 				// Prepare used part of the stack
 				"mov dword ptr [ecx + 0x28], {p5_lo}",
 				"mov dword ptr [ecx + 0x2c], {p5_hi}",
@@ -1050,7 +1050,7 @@ macro_rules! syscall_x86_emulated {
 				options(preserves_flags),
 			);
 			::nt_syscall::enter_x64!();
-			asm!(
+			core::arch::asm!(
 				// Align real stack
 				"mov ebx, esp",
 				"mov esp, ecx",
@@ -1090,7 +1090,7 @@ macro_rules! syscall_x86_emulated {
 		let mut aligned: u32;
 		let mut status: u32;
 		unsafe {
-			asm!(
+			core::arch::asm!(
 				// Align copy stack
 				"mov ecx, esp",
 				"and ecx, 0xfffffff0",
@@ -1099,7 +1099,7 @@ macro_rules! syscall_x86_emulated {
 				out("ecx") aligned,
 				options(pure, nomem, nostack, preserves_flags),
 			);
-			asm!(
+			core::arch::asm!(
 				// Prepare stack spill space
 				"mov dword ptr [ecx + 0x00], {index_lo}",
 				"mov dword ptr [ecx + 0x04], {index_hi}",
@@ -1113,7 +1113,7 @@ macro_rules! syscall_x86_emulated {
 				in("ecx") aligned,
 				options(preserves_flags),
 			);
-			asm!(
+			core::arch::asm!(
 				"mov dword ptr [ecx + 0x10], {p2_lo}",
 				"mov dword ptr [ecx + 0x14], {p2_hi}",
 				"mov dword ptr [ecx + 0x18], {p3_lo}",
@@ -1126,7 +1126,7 @@ macro_rules! syscall_x86_emulated {
 				in("ecx") aligned,
 				options(preserves_flags),
 			);
-			asm!(
+			core::arch::asm!(
 				"mov dword ptr [ecx + 0x20], {p4_lo}",
 				"mov dword ptr [ecx + 0x24], {p4_hi}",
 
@@ -1135,7 +1135,7 @@ macro_rules! syscall_x86_emulated {
 				in("ecx") aligned,
 				options(preserves_flags),
 			);
-			asm!(
+			core::arch::asm!(
 				// Prepare used part of the stack
 				"mov dword ptr [ecx + 0x28], {p5_lo}",
 				"mov dword ptr [ecx + 0x2c], {p5_hi}",
@@ -1149,7 +1149,7 @@ macro_rules! syscall_x86_emulated {
 				in("ecx") aligned,
 				options(preserves_flags),
 			);
-			asm!(
+			core::arch::asm!(
 				"mov dword ptr [ecx + 0x38], {p7_lo}",
 				"mov dword ptr [ecx + 0x3c], {p7_hi}",
 
@@ -1159,7 +1159,7 @@ macro_rules! syscall_x86_emulated {
 				options(preserves_flags),
 			);
 			::nt_syscall::enter_x64!();
-			asm!(
+			core::arch::asm!(
 				// Align real stack
 				"mov ebx, esp",
 				"mov esp, ecx",
@@ -1200,7 +1200,7 @@ macro_rules! syscall_x86_emulated {
 		let mut aligned: u32;
 		let mut status: u32;
 		unsafe {
-			asm!(
+			core::arch::asm!(
 				// Align copy stack
 				"mov ecx, esp",
 				"and ecx, 0xfffffff0",
@@ -1209,7 +1209,7 @@ macro_rules! syscall_x86_emulated {
 				out("ecx") aligned,
 				options(pure, nomem, nostack, preserves_flags),
 			);
-			asm!(
+			core::arch::asm!(
 				// Prepare stack spill space
 				"mov dword ptr [ecx + 0x00], {index_lo}",
 				"mov dword ptr [ecx + 0x04], {index_hi}",
@@ -1223,7 +1223,7 @@ macro_rules! syscall_x86_emulated {
 				in("ecx") aligned,
 				options(preserves_flags),
 			);
-			asm!(
+			core::arch::asm!(
 				"mov dword ptr [ecx + 0x10], {p2_lo}",
 				"mov dword ptr [ecx + 0x14], {p2_hi}",
 				"mov dword ptr [ecx + 0x18], {p3_lo}",
@@ -1236,7 +1236,7 @@ macro_rules! syscall_x86_emulated {
 				in("ecx") aligned,
 				options(preserves_flags),
 			);
-			asm!(
+			core::arch::asm!(
 				"mov dword ptr [ecx + 0x20], {p4_lo}",
 				"mov dword ptr [ecx + 0x24], {p4_hi}",
 
@@ -1245,7 +1245,7 @@ macro_rules! syscall_x86_emulated {
 				in("ecx") aligned,
 				options(preserves_flags),
 			);
-			asm!(
+			core::arch::asm!(
 				// Prepare used part of the stack
 				"mov dword ptr [ecx + 0x28], {p5_lo}",
 				"mov dword ptr [ecx + 0x2c], {p5_hi}",
@@ -1259,7 +1259,7 @@ macro_rules! syscall_x86_emulated {
 				in("ecx") aligned,
 				options(preserves_flags),
 			);
-			asm!(
+			core::arch::asm!(
 				"mov dword ptr [ecx + 0x38], {p7_lo}",
 				"mov dword ptr [ecx + 0x3c], {p7_hi}",
 				"mov dword ptr [ecx + 0x40], {p8_lo}",
@@ -1273,7 +1273,7 @@ macro_rules! syscall_x86_emulated {
 				options(preserves_flags),
 			);
 			::nt_syscall::enter_x64!();
-			asm!(
+			core::arch::asm!(
 				// Align real stack
 				"mov ebx, esp",
 				"mov esp, ecx",
@@ -1315,7 +1315,7 @@ macro_rules! syscall_x86_emulated {
 		let mut aligned: u32;
 		let mut status: u32;
 		unsafe {
-			asm!(
+			core::arch::asm!(
 				// Align copy stack
 				"mov ecx, esp",
 				"and ecx, 0xfffffff0",
@@ -1324,7 +1324,7 @@ macro_rules! syscall_x86_emulated {
 				out("ecx") aligned,
 				options(pure, nomem, nostack, preserves_flags),
 			);
-			asm!(
+			core::arch::asm!(
 				// Prepare stack spill space
 				"mov dword ptr [ecx + 0x00], {index_lo}",
 				"mov dword ptr [ecx + 0x04], {index_hi}",
@@ -1338,7 +1338,7 @@ macro_rules! syscall_x86_emulated {
 				in("ecx") aligned,
 				options(preserves_flags),
 			);
-			asm!(
+			core::arch::asm!(
 				"mov dword ptr [ecx + 0x10], {p2_lo}",
 				"mov dword ptr [ecx + 0x14], {p2_hi}",
 				"mov dword ptr [ecx + 0x18], {p3_lo}",
@@ -1351,7 +1351,7 @@ macro_rules! syscall_x86_emulated {
 				in("ecx") aligned,
 				options(preserves_flags),
 			);
-			asm!(
+			core::arch::asm!(
 				"mov dword ptr [ecx + 0x20], {p4_lo}",
 				"mov dword ptr [ecx + 0x24], {p4_hi}",
 
@@ -1360,7 +1360,7 @@ macro_rules! syscall_x86_emulated {
 				in("ecx") aligned,
 				options(preserves_flags),
 			);
-			asm!(
+			core::arch::asm!(
 				// Prepare used part of the stack
 				"mov dword ptr [ecx + 0x28], {p5_lo}",
 				"mov dword ptr [ecx + 0x2c], {p5_hi}",
@@ -1374,7 +1374,7 @@ macro_rules! syscall_x86_emulated {
 				in("ecx") aligned,
 				options(preserves_flags),
 			);
-			asm!(
+			core::arch::asm!(
 				"mov dword ptr [ecx + 0x38], {p7_lo}",
 				"mov dword ptr [ecx + 0x3c], {p7_hi}",
 				"mov dword ptr [ecx + 0x40], {p8_lo}",
@@ -1387,7 +1387,7 @@ macro_rules! syscall_x86_emulated {
 				in("ecx") aligned,
 				options(preserves_flags),
 			);
-			asm!(
+			core::arch::asm!(
 				"mov dword ptr [ecx + 0x48], {p9_lo}",
 				"mov dword ptr [ecx + 0x4c], {p9_hi}",
 
@@ -1397,7 +1397,7 @@ macro_rules! syscall_x86_emulated {
 				options(preserves_flags),
 			);
 			::nt_syscall::enter_x64!();
-			asm!(
+			core::arch::asm!(
 				// Align real stack
 				"mov ebx, esp",
 				"mov esp, ecx",
@@ -1440,7 +1440,7 @@ macro_rules! syscall_x86_emulated {
 		let mut aligned: u32;
 		let mut status: u32;
 		unsafe {
-			asm!(
+			core::arch::asm!(
 				// Align copy stack
 				"mov ecx, esp",
 				"and ecx, 0xfffffff0",
@@ -1449,7 +1449,7 @@ macro_rules! syscall_x86_emulated {
 				out("ecx") aligned,
 				options(pure, nomem, nostack, preserves_flags),
 			);
-			asm!(
+			core::arch::asm!(
 				// Prepare stack spill space
 				"mov dword ptr [ecx + 0x00], {index_lo}",
 				"mov dword ptr [ecx + 0x04], {index_hi}",
@@ -1463,7 +1463,7 @@ macro_rules! syscall_x86_emulated {
 				in("ecx") aligned,
 				options(preserves_flags),
 			);
-			asm!(
+			core::arch::asm!(
 				"mov dword ptr [ecx + 0x10], {p2_lo}",
 				"mov dword ptr [ecx + 0x14], {p2_hi}",
 				"mov dword ptr [ecx + 0x18], {p3_lo}",
@@ -1476,7 +1476,7 @@ macro_rules! syscall_x86_emulated {
 				in("ecx") aligned,
 				options(preserves_flags),
 			);
-			asm!(
+			core::arch::asm!(
 				"mov dword ptr [ecx + 0x20], {p4_lo}",
 				"mov dword ptr [ecx + 0x24], {p4_hi}",
 
@@ -1485,7 +1485,7 @@ macro_rules! syscall_x86_emulated {
 				in("ecx") aligned,
 				options(preserves_flags),
 			);
-			asm!(
+			core::arch::asm!(
 				// Prepare used part of the stack
 				"mov dword ptr [ecx + 0x28], {p5_lo}",
 				"mov dword ptr [ecx + 0x2c], {p5_hi}",
@@ -1499,7 +1499,7 @@ macro_rules! syscall_x86_emulated {
 				in("ecx") aligned,
 				options(preserves_flags),
 			);
-			asm!(
+			core::arch::asm!(
 				"mov dword ptr [ecx + 0x38], {p7_lo}",
 				"mov dword ptr [ecx + 0x3c], {p7_hi}",
 				"mov dword ptr [ecx + 0x40], {p8_lo}",
@@ -1512,7 +1512,7 @@ macro_rules! syscall_x86_emulated {
 				in("ecx") aligned,
 				options(preserves_flags),
 			);
-			asm!(
+			core::arch::asm!(
 				"mov dword ptr [ecx + 0x48], {p9_lo}",
 				"mov dword ptr [ecx + 0x4c], {p9_hi}",
 				"mov dword ptr [ecx + 0x50], {p10_lo}",
@@ -1526,7 +1526,7 @@ macro_rules! syscall_x86_emulated {
 				options(preserves_flags),
 			);
 			::nt_syscall::enter_x64!();
-			asm!(
+			core::arch::asm!(
 				// Align real stack
 				"mov ebx, esp",
 				"mov esp, ecx",
@@ -1570,7 +1570,7 @@ macro_rules! syscall_x86_emulated {
 		let mut aligned: u32;
 		let mut status: u32;
 		unsafe {
-			asm!(
+			core::arch::asm!(
 				// Align copy stack
 				"mov ecx, esp",
 				"and ecx, 0xfffffff0",
@@ -1579,7 +1579,7 @@ macro_rules! syscall_x86_emulated {
 				out("ecx") aligned,
 				options(pure, nomem, nostack, preserves_flags),
 			);
-			asm!(
+			core::arch::asm!(
 				// Prepare stack spill space
 				"mov dword ptr [ecx + 0x00], {index_lo}",
 				"mov dword ptr [ecx + 0x04], {index_hi}",
@@ -1593,7 +1593,7 @@ macro_rules! syscall_x86_emulated {
 				in("ecx") aligned,
 				options(preserves_flags),
 			);
-			asm!(
+			core::arch::asm!(
 				"mov dword ptr [ecx + 0x10], {p2_lo}",
 				"mov dword ptr [ecx + 0x14], {p2_hi}",
 				"mov dword ptr [ecx + 0x18], {p3_lo}",
@@ -1606,7 +1606,7 @@ macro_rules! syscall_x86_emulated {
 				in("ecx") aligned,
 				options(preserves_flags),
 			);
-			asm!(
+			core::arch::asm!(
 				"mov dword ptr [ecx + 0x20], {p4_lo}",
 				"mov dword ptr [ecx + 0x24], {p4_hi}",
 
@@ -1615,7 +1615,7 @@ macro_rules! syscall_x86_emulated {
 				in("ecx") aligned,
 				options(preserves_flags),
 			);
-			asm!(
+			core::arch::asm!(
 				// Prepare used part of the stack
 				"mov dword ptr [ecx + 0x28], {p5_lo}",
 				"mov dword ptr [ecx + 0x2c], {p5_hi}",
@@ -1629,7 +1629,7 @@ macro_rules! syscall_x86_emulated {
 				in("ecx") aligned,
 				options(preserves_flags),
 			);
-			asm!(
+			core::arch::asm!(
 				"mov dword ptr [ecx + 0x38], {p7_lo}",
 				"mov dword ptr [ecx + 0x3c], {p7_hi}",
 				"mov dword ptr [ecx + 0x40], {p8_lo}",
@@ -1642,7 +1642,7 @@ macro_rules! syscall_x86_emulated {
 				in("ecx") aligned,
 				options(preserves_flags),
 			);
-			asm!(
+			core::arch::asm!(
 				"mov dword ptr [ecx + 0x48], {p9_lo}",
 				"mov dword ptr [ecx + 0x4c], {p9_hi}",
 				"mov dword ptr [ecx + 0x50], {p10_lo}",
@@ -1655,7 +1655,7 @@ macro_rules! syscall_x86_emulated {
 				in("ecx") aligned,
 				options(preserves_flags),
 			);
-			asm!(
+			core::arch::asm!(
 				"mov dword ptr [ecx + 0x58], {p11_lo}",
 				"mov dword ptr [ecx + 0x5c], {p11_hi}",
 
@@ -1665,7 +1665,7 @@ macro_rules! syscall_x86_emulated {
 				options(preserves_flags),
 			);
 			::nt_syscall::enter_x64!();
-			asm!(
+			core::arch::asm!(
 				// Align real stack
 				"mov ebx, esp",
 				"mov esp, ecx",
@@ -1710,7 +1710,7 @@ macro_rules! syscall_x86_emulated {
 		let mut aligned: u32;
 		let mut status: u32;
 		unsafe {
-			asm!(
+			core::arch::asm!(
 				// Align copy stack
 				"mov ecx, esp",
 				"and ecx, 0xfffffff0",
@@ -1719,7 +1719,7 @@ macro_rules! syscall_x86_emulated {
 				out("ecx") aligned,
 				options(pure, nomem, nostack, preserves_flags),
 			);
-			asm!(
+			core::arch::asm!(
 				// Prepare stack spill space
 				"mov dword ptr [ecx + 0x00], {index_lo}",
 				"mov dword ptr [ecx + 0x04], {index_hi}",
@@ -1733,7 +1733,7 @@ macro_rules! syscall_x86_emulated {
 				in("ecx") aligned,
 				options(preserves_flags),
 			);
-			asm!(
+			core::arch::asm!(
 				"mov dword ptr [ecx + 0x10], {p2_lo}",
 				"mov dword ptr [ecx + 0x14], {p2_hi}",
 				"mov dword ptr [ecx + 0x18], {p3_lo}",
@@ -1746,7 +1746,7 @@ macro_rules! syscall_x86_emulated {
 				in("ecx") aligned,
 				options(preserves_flags),
 			);
-			asm!(
+			core::arch::asm!(
 				"mov dword ptr [ecx + 0x20], {p4_lo}",
 				"mov dword ptr [ecx + 0x24], {p4_hi}",
 
@@ -1755,7 +1755,7 @@ macro_rules! syscall_x86_emulated {
 				in("ecx") aligned,
 				options(preserves_flags),
 			);
-			asm!(
+			core::arch::asm!(
 				// Prepare used part of the stack
 				"mov dword ptr [ecx + 0x28], {p5_lo}",
 				"mov dword ptr [ecx + 0x2c], {p5_hi}",
@@ -1769,7 +1769,7 @@ macro_rules! syscall_x86_emulated {
 				in("ecx") aligned,
 				options(preserves_flags),
 			);
-			asm!(
+			core::arch::asm!(
 				"mov dword ptr [ecx + 0x38], {p7_lo}",
 				"mov dword ptr [ecx + 0x3c], {p7_hi}",
 				"mov dword ptr [ecx + 0x40], {p8_lo}",
@@ -1782,7 +1782,7 @@ macro_rules! syscall_x86_emulated {
 				in("ecx") aligned,
 				options(preserves_flags),
 			);
-			asm!(
+			core::arch::asm!(
 				"mov dword ptr [ecx + 0x48], {p9_lo}",
 				"mov dword ptr [ecx + 0x4c], {p9_hi}",
 				"mov dword ptr [ecx + 0x50], {p10_lo}",
@@ -1795,7 +1795,7 @@ macro_rules! syscall_x86_emulated {
 				in("ecx") aligned,
 				options(preserves_flags),
 			);
-			asm!(
+			core::arch::asm!(
 				"mov dword ptr [ecx + 0x58], {p11_lo}",
 				"mov dword ptr [ecx + 0x5c], {p11_hi}",
 				"mov dword ptr [ecx + 0x60], {p12_lo}",
@@ -1809,7 +1809,7 @@ macro_rules! syscall_x86_emulated {
 				options(preserves_flags),
 			);
 			::nt_syscall::enter_x64!();
-			asm!(
+			core::arch::asm!(
 				// Align real stack
 				"mov ebx, esp",
 				"mov esp, ecx",
@@ -1855,7 +1855,7 @@ macro_rules! syscall_x86_emulated {
 		let mut aligned: u32;
 		let mut status: u32;
 		unsafe {
-			asm!(
+			core::arch::asm!(
 				// Align copy stack
 				"mov ecx, esp",
 				"and ecx, 0xfffffff0",
@@ -1864,7 +1864,7 @@ macro_rules! syscall_x86_emulated {
 				out("ecx") aligned,
 				options(pure, nomem, nostack, preserves_flags),
 			);
-			asm!(
+			core::arch::asm!(
 				// Prepare stack spill space
 				"mov dword ptr [ecx + 0x00], {index_lo}",
 				"mov dword ptr [ecx + 0x04], {index_hi}",
@@ -1878,7 +1878,7 @@ macro_rules! syscall_x86_emulated {
 				in("ecx") aligned,
 				options(preserves_flags),
 			);
-			asm!(
+			core::arch::asm!(
 				"mov dword ptr [ecx + 0x10], {p2_lo}",
 				"mov dword ptr [ecx + 0x14], {p2_hi}",
 				"mov dword ptr [ecx + 0x18], {p3_lo}",
@@ -1891,7 +1891,7 @@ macro_rules! syscall_x86_emulated {
 				in("ecx") aligned,
 				options(preserves_flags),
 			);
-			asm!(
+			core::arch::asm!(
 				"mov dword ptr [ecx + 0x20], {p4_lo}",
 				"mov dword ptr [ecx + 0x24], {p4_hi}",
 
@@ -1900,7 +1900,7 @@ macro_rules! syscall_x86_emulated {
 				in("ecx") aligned,
 				options(preserves_flags),
 			);
-			asm!(
+			core::arch::asm!(
 				// Prepare used part of the stack
 				"mov dword ptr [ecx + 0x28], {p5_lo}",
 				"mov dword ptr [ecx + 0x2c], {p5_hi}",
@@ -1914,7 +1914,7 @@ macro_rules! syscall_x86_emulated {
 				in("ecx") aligned,
 				options(preserves_flags),
 			);
-			asm!(
+			core::arch::asm!(
 				"mov dword ptr [ecx + 0x38], {p7_lo}",
 				"mov dword ptr [ecx + 0x3c], {p7_hi}",
 				"mov dword ptr [ecx + 0x40], {p8_lo}",
@@ -1927,7 +1927,7 @@ macro_rules! syscall_x86_emulated {
 				in("ecx") aligned,
 				options(preserves_flags),
 			);
-			asm!(
+			core::arch::asm!(
 				"mov dword ptr [ecx + 0x48], {p9_lo}",
 				"mov dword ptr [ecx + 0x4c], {p9_hi}",
 				"mov dword ptr [ecx + 0x50], {p10_lo}",
@@ -1940,7 +1940,7 @@ macro_rules! syscall_x86_emulated {
 				in("ecx") aligned,
 				options(preserves_flags),
 			);
-			asm!(
+			core::arch::asm!(
 				"mov dword ptr [ecx + 0x58], {p11_lo}",
 				"mov dword ptr [ecx + 0x5c], {p11_hi}",
 				"mov dword ptr [ecx + 0x60], {p12_lo}",
@@ -1953,7 +1953,7 @@ macro_rules! syscall_x86_emulated {
 				in("ecx") aligned,
 				options(preserves_flags),
 			);
-			asm!(
+			core::arch::asm!(
 				"mov dword ptr [ecx + 0x68], {p13_lo}",
 				"mov dword ptr [ecx + 0x6c], {p13_hi}",
 
@@ -1963,7 +1963,7 @@ macro_rules! syscall_x86_emulated {
 				options(preserves_flags),
 			);
 			::nt_syscall::enter_x64!();
-			asm!(
+			core::arch::asm!(
 				// Align real stack
 				"mov ebx, esp",
 				"mov esp, ecx",
@@ -1999,7 +1999,7 @@ macro_rules! syscall_x86_emulated {
 macro_rules! syscall_x86 {
 	($($index:expr)*) => {{
 		let mut status: u32 = 0;
-		asm!(
+		core::arch::asm!(
 			"sub esp, 0x4",
 
 			"mov edx, esp",
@@ -2018,7 +2018,7 @@ macro_rules! syscall_x86 {
 	}};
 	($($index:expr)*, $($p1:expr)*) => {{
 		let mut status: u32 = 0;
-		asm!(
+		core::arch::asm!(
 			"push {p1:e}",
 			"sub esp, 0x4",
 
@@ -2040,7 +2040,7 @@ macro_rules! syscall_x86 {
 	}};
 	($($index:expr)*, $($p1:expr)*, $($p2:expr)*) => {{
 		let mut status: u32 = 0;
-		asm!(
+		core::arch::asm!(
 			"push {p2:e}",
 			"push {p1:e}",
 			"sub esp, 0x4",
@@ -2064,7 +2064,7 @@ macro_rules! syscall_x86 {
 	}};
 	($($index:expr)*, $($p1:expr)*, $($p2:expr)*, $($p3:expr)*) => {{
 		let mut status: u32 = 0;
-		asm!(
+		core::arch::asm!(
 			"push {p3:e}",
 			"push {p2:e}",
 			"push {p1:e}",
@@ -2090,7 +2090,7 @@ macro_rules! syscall_x86 {
 	}};
 	($($index:expr)*, $($p1:expr)*, $($p2:expr)*, $($p3:expr)*, $($p4:expr)*) => {{
 		let mut status: u32 = 0;
-		asm!(
+		core::arch::asm!(
 			"push {p4:e}",
 			"push {p3:e}",
 			"push {p2:e}",
@@ -2118,12 +2118,12 @@ macro_rules! syscall_x86 {
 	}};
 	($($index:expr)*, $($p1:expr)*, $($p2:expr)*, $($p3:expr)*, $($p4:expr)*, $($p5:expr)*) => {{
 		let mut status: u32 = 0;
-		asm!(
+		core::arch::asm!(
 			"push {p5:e}",
 
 			p5 = in(reg) ($($p5)*) as u32,
 		);
-		asm!(
+		core::arch::asm!(
 			"push {p4:e}",
 			"push {p3:e}",
 			"push {p2:e}",
@@ -2151,14 +2151,14 @@ macro_rules! syscall_x86 {
 	}};
 	($($index:expr)*, $($p1:expr)*, $($p2:expr)*, $($p3:expr)*, $($p4:expr)*, $($p5:expr)*, $($p6:expr)*) => {{
 		let mut status: u32 = 0;
-		asm!(
+		core::arch::asm!(
 			"push {p6:e}",
 			"push {p5:e}",
 			
 			p6 = in(reg) ($($p6)*) as u32,
 			p5 = in(reg) ($($p5)*) as u32,
 		);
-		asm!(
+		core::arch::asm!(
 			"push {p4:e}",
 			"push {p3:e}",
 			"push {p2:e}",
@@ -2186,7 +2186,7 @@ macro_rules! syscall_x86 {
 	}};
 	($($index:expr)*, $($p1:expr)*, $($p2:expr)*, $($p3:expr)*, $($p4:expr)*, $($p5:expr)*, $($p6:expr)*, $($p7:expr)*) => {{
 		let mut status: u32 = 0;
-		asm!(
+		core::arch::asm!(
 			"push {p7:e}",
 			"push {p6:e}",
 			"push {p5:e}",
@@ -2195,7 +2195,7 @@ macro_rules! syscall_x86 {
 			p6 = in(reg) ($($p6)*) as u32,
 			p5 = in(reg) ($($p5)*) as u32,
 		);
-		asm!(
+		core::arch::asm!(
 			"push {p4:e}",
 			"push {p3:e}",
 			"push {p2:e}",
@@ -2223,7 +2223,7 @@ macro_rules! syscall_x86 {
 	}};
 	($($index:expr)*, $($p1:expr)*, $($p2:expr)*, $($p3:expr)*, $($p4:expr)*, $($p5:expr)*, $($p6:expr)*, $($p7:expr)*, $($p8:expr)*) => {{
 		let mut status: u32 = 0;
-		asm!(
+		core::arch::asm!(
 			"push {p8:e}",
 			"push {p7:e}",
 			"push {p6:e}",
@@ -2234,7 +2234,7 @@ macro_rules! syscall_x86 {
 			p6 = in(reg) ($($p6)*) as u32,
 			p5 = in(reg) ($($p5)*) as u32,
 		);
-		asm!(
+		core::arch::asm!(
 			"push {p4:e}",
 			"push {p3:e}",
 			"push {p2:e}",
@@ -2262,7 +2262,7 @@ macro_rules! syscall_x86 {
 	}};
 	($($index:expr)*, $($p1:expr)*, $($p2:expr)*, $($p3:expr)*, $($p4:expr)*, $($p5:expr)*, $($p6:expr)*, $($p7:expr)*, $($p8:expr)*, $($p9:expr)*) => {{
 		let mut status: u32 = 0;
-		asm!(
+		core::arch::asm!(
 			"push {p9:e}",
 			"push {p8:e}",
 			"push {p7:e}",
@@ -2275,7 +2275,7 @@ macro_rules! syscall_x86 {
 			p6 = in(reg) ($($p6)*) as u32,
 			p5 = in(reg) ($($p5)*) as u32,
 		);
-		asm!(
+		core::arch::asm!(
 			"push {p4:e}",
 			"push {p3:e}",
 			"push {p2:e}",
@@ -2303,7 +2303,7 @@ macro_rules! syscall_x86 {
 	}};
 	($($index:expr)*, $($p1:expr)*, $($p2:expr)*, $($p3:expr)*, $($p4:expr)*, $($p5:expr)*, $($p6:expr)*, $($p7:expr)*, $($p8:expr)*, $($p9:expr)*, $($p10:expr)*) => {{
 		let mut status: u32 = 0;
-		asm!(
+		core::arch::asm!(
 			"push {p10:e}",
 			"push {p9:e}",
 			"push {p8:e}",
@@ -2318,7 +2318,7 @@ macro_rules! syscall_x86 {
 			p6 = in(reg) ($($p6)*) as u32,
 			p5 = in(reg) ($($p5)*) as u32,
 		);
-		asm!(
+		core::arch::asm!(
 			"push {p4:e}",
 			"push {p3:e}",
 			"push {p2:e}",
@@ -2346,12 +2346,12 @@ macro_rules! syscall_x86 {
 	}};
 	($($index:expr)*, $($p1:expr)*, $($p2:expr)*, $($p3:expr)*, $($p4:expr)*, $($p5:expr)*, $($p6:expr)*, $($p7:expr)*, $($p8:expr)*, $($p9:expr)*, $($p10:expr)*, $($p11:expr)*) => {{
 		let mut status: u32 = 0;
-		asm!(
+		core::arch::asm!(
 			"push {p11:e}",
 
 			p11 = in(reg) ($($p11)*) as u32,
 		);
-		asm!(
+		core::arch::asm!(
 			"push {p10:e}",
 			"push {p9:e}",
 			"push {p8:e}",
@@ -2366,7 +2366,7 @@ macro_rules! syscall_x86 {
 			p6 = in(reg) ($($p6)*) as u32,
 			p5 = in(reg) ($($p5)*) as u32,
 		);
-		asm!(
+		core::arch::asm!(
 			"push {p4:e}",
 			"push {p3:e}",
 			"push {p2:e}",
@@ -2394,14 +2394,14 @@ macro_rules! syscall_x86 {
 	}};
 	($($index:expr)*, $($p1:expr)*, $($p2:expr)*, $($p3:expr)*, $($p4:expr)*, $($p5:expr)*, $($p6:expr)*, $($p7:expr)*, $($p8:expr)*, $($p9:expr)*, $($p10:expr)*, $($p11:expr)*, $($p12:expr)*) => {{
 		let mut status: u32 = 0;
-		asm!(
+		core::arch::asm!(
 			"push {p12:e}",
 			"push {p11:e}",
 
 			p12 = in(reg) ($($p12)*) as u32,
 			p11 = in(reg) ($($p11)*) as u32,
 		);
-		asm!(
+		core::arch::asm!(
 			"push {p10:e}",
 			"push {p9:e}",
 			"push {p8:e}",
@@ -2416,7 +2416,7 @@ macro_rules! syscall_x86 {
 			p6 = in(reg) ($($p6)*) as u32,
 			p5 = in(reg) ($($p5)*) as u32,
 		);
-		asm!(
+		core::arch::asm!(
 			"push {p4:e}",
 			"push {p3:e}",
 			"push {p2:e}",
@@ -2444,7 +2444,7 @@ macro_rules! syscall_x86 {
 	}};
 	($($index:expr)*, $($p1:expr)*, $($p2:expr)*, $($p3:expr)*, $($p4:expr)*, $($p5:expr)*, $($p6:expr)*, $($p7:expr)*, $($p8:expr)*, $($p9:expr)*, $($p10:expr)*, $($p11:expr)*, $($p12:expr)*, $($p13:expr)*) => {{
 		let mut status: u32 = 0;
-		asm!(
+		core::arch::asm!(
 			"push {p13:e}",
 			"push {p12:e}",
 			"push {p11:e}",
@@ -2453,7 +2453,7 @@ macro_rules! syscall_x86 {
 			p12 = in(reg) ($($p12)*) as u32,
 			p11 = in(reg) ($($p11)*) as u32,
 		)
-		asm!(
+		core::arch::asm!(
 			"push {p10:e}",
 			"push {p9:e}",
 			"push {p8:e}",
@@ -2468,7 +2468,7 @@ macro_rules! syscall_x86 {
 			p6 = in(reg) ($($p6)*) as u32,
 			p5 = in(reg) ($($p5)*) as u32,
 		);
-		asm!(
+		core::arch::asm!(
 			"push {p4:e}",
 			"push {p3:e}",
 			"push {p2:e}",
