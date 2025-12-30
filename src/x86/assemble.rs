@@ -1,4 +1,4 @@
-pub macro encode {
+pub macro assemble {
     (@ "jmp ecx")                           => { ".byte 0xff, 0xe1" },
     (@ "call ecx")                          => { ".byte 0xff, 0xd1" },
     (@ "call $0")                           => { ".byte 0xe8, 0x00, 0x00, 0x00, 0x00" },
@@ -50,6 +50,6 @@ pub macro encode {
         compile_error!( concat!("Unsupported instruction ", stringify!($instr)))
     },
     ( $( $instr:tt ),* $(,)? ) => {
-        concat!( $( encode!(@ $instr), "\n" ),* )
+        concat!( $( assemble!(@ $instr), "\n" ),* )
     },
 }

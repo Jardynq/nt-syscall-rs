@@ -1,5 +1,5 @@
+#![no_std]
 #![cfg(windows)]
-//#![no_std]
 #![allow(unused_macros, unused_unsafe)]
 #![feature(macro_metavar_expr, decl_macro, const_cmp, const_trait_impl)]
 #![recursion_limit = "1024"]
@@ -13,6 +13,7 @@ mod tests;
 mod shared;
 pub mod x64;
 pub mod x86;
+pub use aligned;
 
 pub macro asm($args:expr, $($tok:tt)+) {{
     #[cfg(target_arch = "x86_64")]
@@ -31,6 +32,14 @@ pub macro asm($args:expr, $($tok:tt)+) {{
     );
 }}
 
+#[repr(u8)]
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub enum CpuType {
+    X64,
+    X86,
+    Arm64,
+}
+
 #[repr(C)]
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct CpuMode {
@@ -39,7 +48,14 @@ pub struct CpuMode {
 }
 impl Default for CpuMode {
     fn default() -> Self {
-        Self::from(get_cpu_mode!())
+        let mut mode: u16;
+        unsafe {
+            core::arch::asm!(
+                "mov ax, cs",
+                out("ax") mode,
+            );
+        }
+        Self::from(mode)
     }
 }
 impl CpuMode {
@@ -73,21 +89,29 @@ impl CpuMode {
     }
 }
 
-#[repr(u8)]
-#[derive(Clone, Copy, Debug, PartialEq)]
-pub enum CpuType {
-    X64,
-    X86,
-    Arm64,
+pub macro encode($($lit:tt)+) {
+    const_str::hex!(
+        const_str::split!(
+            const_str::trim_ascii!(
+                const_str::replace!(
+                    const_str::replace!(
+                        const_str::replace!(
+                            const_str::replace!(
+                                $($lit)+,
+                                "0x",
+                                ""
+                            ),
+                            "\n.byte ",
+                            ", "
+                        ),
+                        ".byte ",
+                        ""
+                    ),
+                    "\n",
+                    ""
+                )
+            ),
+            ", "
+        )
+    )
 }
-
-pub macro get_cpu_mode() {{
-    let mut mode: u16;
-    unsafe {
-        core::arch::asm!(
-            "mov ax, cs",
-            out("ax") mode,
-        );
-    }
-    mode
-}}

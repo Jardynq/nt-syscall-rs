@@ -1,7 +1,7 @@
 extern crate std;
 
 #[allow(unused_imports)]
-use crate::{x64, x86};
+use crate::{asm, x64, x86};
 use winapi::um::winnt::{MEM_COMMIT, MEM_RELEASE, MEM_RESERVE, PAGE_EXECUTE_READWRITE};
 
 #[cfg(target_arch = "x86_64")]
@@ -76,19 +76,10 @@ fn wait() {
 fn alloc(mut address: u64, mut size: u64) -> Result<u64, u32> {
     unsafe {
         let id = NT_VIRTUAL_MEMORY_IDS.0;
-        #[cfg(target_arch = "x86")]
-        let status = x86::inline::syscall!(
+        let mut status: u64 = 0;
+        let args = x64::args!(
             id,
-            -1i32,
-            &mut address,
-            0,
-            &mut size,
-            MEM_RESERVE | MEM_COMMIT,
-            PAGE_EXECUTE_READWRITE
-        );
-        #[cfg(target_arch = "x86_64")]
-        let status = x64::inline::syscall!(
-            id,
+            &mut status,
             -1i64,
             &mut address,
             0,
@@ -96,8 +87,14 @@ fn alloc(mut address: u64, mut size: u64) -> Result<u64, u32> {
             MEM_RESERVE | MEM_COMMIT,
             PAGE_EXECUTE_READWRITE
         );
+
+        #[cfg(target_arch = "x86")]
+        asm!(args, x86::enter_x64!(), x64::syscall!(6), x64::enter_x86!());
+        #[cfg(target_arch = "x86_64")]
+        asm!(args, x64::syscall!(6));
+
         if status != 0 {
-            Err(status)
+            Err(status as u32)
         } else {
             Ok(address)
         }
@@ -133,11 +130,23 @@ fn alloc_high(size: u64) -> u64 {
 fn free(mut address: u64) {
     unsafe {
         let mut size: u64 = 0;
+        let mut status: u64 = 0;
         let id = NT_VIRTUAL_MEMORY_IDS.1;
+        let args = x64::args!(
+            id,
+            &mut status,
+            -1isize,
+            &mut address,
+            &mut size,
+            MEM_RELEASE
+        );
+
         #[cfg(target_arch = "x86")]
-        let status = x86::inline::syscall!(id, -1isize, &mut address, &mut size, MEM_RELEASE);
+        asm!(args, x86::enter_x64!(), x64::syscall!(5), x64::enter_x86!());
+
         #[cfg(target_arch = "x86_64")]
-        let status = x64::inline::syscall!(id, -1isize, &mut address, &mut size, MEM_RELEASE);
+        asm!(args, x64::syscall!(5));
+
         if status != 0 {
             panic!("NtFreeVirtualMemory failed: {:#x}", status);
         }

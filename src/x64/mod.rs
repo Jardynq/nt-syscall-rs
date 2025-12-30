@@ -1,6 +1,8 @@
+mod assemble;
 mod callconv;
-mod encode;
+mod shellcode;
 
-pub mod binary;
-pub mod inline;
-pub mod shellcode;
+pub use crate::shared::args64 as args;
+pub use assemble::*;
+pub use callconv::*;
+pub use shellcode::*;

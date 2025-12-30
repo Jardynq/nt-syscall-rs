@@ -1,4 +1,4 @@
-pub macro encode {
+pub macro assemble {
     (@ "jmp rcx")                           => { ".byte 0xff, 0xe1" },
     (@ "jmp rax")                           => { ".byte 0xff, 0xe0" },
     (@ "call rax")                          => { ".byte 0xff, 0xd0" },
@@ -259,12 +259,19 @@ pub macro encode {
     (@ "movsd xmm2, qword [rcx + 0x10]")    => { ".byte 0xf2, 0x0f, 0x10, 0x51, 0x10" },
     (@ "movsd xmm3, qword [rcx + 0x18]")    => { ".byte 0xf2, 0x0f, 0x10, 0x59, 0x18" },
 
-
+    (@ "mov rdx, qword [rdx]")          => { ".byte 0x48, 0x8b, 0x12" },
+    (@ "mov qword [rax], rdx")          => { ".byte 0x48, 0x89, 0x10" },
+    (@ "mov edx, dword [rdx]")          => { ".byte 0x8b, 0x12" },
+    (@ "mov dword [rax], edx")          => { ".byte 0x89, 0x10" },
+    (@ "mov dx, word [rdx]")            => { ".byte 0x66, 0x8b, 0x12" },
+    (@ "mov word [rax], dx")            => { ".byte 0x66, 0x89, 0x10" },
+    (@ "mov dl, byte [rdx]")            => { ".byte 0x8a, 0x12" },
+    (@ "mov byte [rax], dl")            => { ".byte 0x88, 0x10" },
 
     (@ $instr:tt) => {
         compile_error!( concat!("Unsupported instruction ", stringify!($instr)))
     },
     ( $( $instr:tt ),* $(,)? ) => {
-        concat!( $( encode!(@ $instr), "\n" ),* )
+        concat!( $( assemble!(@ $instr), "\n" ),* )
     },
 }
