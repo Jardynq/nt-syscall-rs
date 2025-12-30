@@ -1,164 +1,23 @@
 [package]
 name = "nt-syscall"
-version = "0.1.0"
+version = "0.2.0"
 authors = ["svorr <svorre2304@gmail.com>"]
-edition = "2018"
+edition = "2024"
 
-
-[dependencies.ntapi]
-version = "0.3.6"
-
-
-[features]
-default = [
-	"nt",
-	"windows_11",
-	"windows_10",
+[workspace]
+members = [
+    ".",
+    "dummy",
 ]
 
-# For nt syscalls such as NtCreateThread
-nt = []
-# For win32k or win32u suscalls such as NtGdiInit
-win32 = []
+[dependencies]
+const-str = "0.7.1"
+tt-call = "1.0.9"
+nt-sysdump = {path = "../nt-sysdump-rs"}
 
+[dev-dependencies]
+winapi = {version = "0.3.9", features = ["memoryapi", "processthreadsapi"]}
+nt-sysdump = {path = "../nt-sysdump-rs"}
 
-# Windows release builds
-all = [
-	"windows_11",
-	"windows_10",
-	"windows_8",
-	"windows_server_2012",
-	"windows_7",
-	"windows_server_2008",
-	"windows_vista",
-	"windows_server_2003",
-	"windows_xp",
-	"windows_2000",
-	"windows_nt",
-]
-
-
-windows_11_21h2 = []
-windows_11 = [
-	"windows_11_21h2",
-]
-
-windows_10_21h2 = []
-windows_10_21h1 = []
-windows_10_20h2 = []
-windows_10_2004 = []
-windows_10_1909 = []
-windows_10_1903 = []
-windows_10_1809 = []
-windows_10_1803 = []
-windows_10_1709 = []
-windows_10_1703 = []
-windows_10_1607 = []
-windows_10_1511 = []
-windows_10_1507 = []
-windows_10 = [
-	"windows_10_21h2",
-	"windows_10_21h1",
-	"windows_10_20h2",
-	"windows_10_2004",
-	"windows_10_1909",
-	"windows_10_1903",
-	"windows_10_1809",
-	"windows_10_1803",
-	"windows_10_1709",
-	"windows_10_1703",
-	"windows_10_1607",
-	"windows_10_1511",
-	"windows_10_1507",
-]
-
-windows_8_1 = []
-windows_8_0 = []
-windows_8 = [
-	"windows_8_1",
-	"windows_8_0",
-]
-
-windows_server_2012_r2 = []
-windows_server_2012_sp0 = []
-windows_server_2012 = [
-	"windows_server_2012_r2",
-	"windows_server_2012_sp0",
-]
-
-windows_7_sp1 = []
-windows_7_sp0 = []
-windows_7 = [
-	"windows_7_sp1",
-	"windows_7_sp0",
-]
-
-windows_server_2008_r2_sp1 = []
-windows_server_2008_r2 = []
-windows_server_2008_sp2 = []
-windows_server_2008_sp0 = []
-windows_server_2008 = [
-	"windows_server_2008_r2_sp1",
-	"windows_server_2008_r2",
-	"windows_server_2008_sp2",
-	"windows_server_2008_sp0",
-]
-
-windows_vista_sp2 = []
-windows_vista_sp1 = []
-windows_vista_sp0 = []
-windows_vista = [
-	"windows_vista_sp2",
-	"windows_vista_sp1",
-	"windows_vista_sp0",
-]
-
-windows_server_2003_r2_sp2 = []
-windows_server_2003_r2 = []
-windows_server_2003_sp2 = []
-windows_server_2003_sp1 = []
-windows_server_2003_sp0 = []
-windows_server_2003 = [
-	"windows_server_2003_r2_sp2",
-	"windows_server_2003_r2",
-	"windows_server_2003_sp2",
-	"windows_server_2003_sp1",
-	"windows_server_2003_sp0",
-]
-
-windows_xp_sp3 = []
-windows_xp_sp2 = []
-windows_xp_sp1 = []
-windows_xp_sp0 = []
-windows_xp = [
-	"windows_xp_sp3",
-	"windows_xp_sp2",
-	"windows_xp_sp1",
-	"windows_xp_sp0",
-]
-
-windows_2000_sp4 = []
-windows_2000_sp3 = []
-windows_2000_sp2 = []
-windows_2000_sp1 = []
-windows_2000_sp0 = []
-windows_2000 = [
-	"windows_2000_sp4",
-	"windows_2000_sp3",
-	"windows_2000_sp2",
-	"windows_2000_sp1",
-	"windows_2000_sp0",
-]
-
-windows_nt_sp6 = []
-windows_nt_sp5 = []
-windows_nt_sp4 = []
-windows_nt_sp3 = []
-windows_nt_sp3_ts = []
-windows_nt = [
-	"windows_nt_sp6",
-	"windows_nt_sp5",
-	"windows_nt_sp4",
-	"windows_nt_sp3",
-	"windows_nt_sp3_ts",
-]
+[profile.release]
+debug = true
