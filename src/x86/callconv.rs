@@ -1,6 +1,8 @@
 #![allow(unused_imports)]
 use crate::{shared, x86};
 
+// TODO test this on native x86 system
+// TODO maybe use a @stack to sub esp then move args instead of pushing all args
 pub macro callconv_syscall {
     (@ret) => {
         concat!(
@@ -10,6 +12,15 @@ pub macro callconv_syscall {
     },
 
     (@arg 0) => { "" },
+    // TODO either make a prev macro to do $count - 1 or use recursion with tt munching
+    /*(@arg $count:tt) => {
+        concat!(
+            x86::assemble!("mov eax, dword ptr [ecx + 4 * (" $count "- 1)]"),
+            x86::assemble!("push eax"),
+            x86::callconv_syscall!(@arg $count - 1),
+        )
+    },*/
+
     (@arg 1) => {
 		concat!(
 			x86::encode!("mov eax, dword ptr [ecx]"),

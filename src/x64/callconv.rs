@@ -1,8 +1,6 @@
 #[allow(unused_imports)]
 use crate::x64;
 
-// TODO syscall and win64 are ver similar, can we merge some code?
-
 pub macro callconv_syscall {
     (@ret) => {
         concat!(
@@ -15,16 +13,7 @@ pub macro callconv_syscall {
     (@stack 1) => { x64::assemble!("sub rsp, 0x30") },
     (@stack 2) => { x64::assemble!("sub rsp, 0x30") },
     (@stack 3) => { x64::assemble!("sub rsp, 0x30") },
-    (@stack 4) => { x64::assemble!("sub rsp, 0x30") },
-    (@stack 5) => { x64::assemble!("sub rsp, 0x30") },
-    (@stack 6) => { x64::assemble!("sub rsp, 0x40") },
-    (@stack 7) => { x64::assemble!("sub rsp, 0x40") },
-    (@stack 8) => { x64::assemble!("sub rsp, 0x50") },
-    (@stack 9) => { x64::assemble!("sub rsp, 0x50") },
-    (@stack 10) => { x64::assemble!("sub rsp, 0x60") },
-    (@stack 11) => { x64::assemble!("sub rsp, 0x60") },
-    (@stack 12) => { x64::assemble!("sub rsp, 0x70") },
-    (@stack 13) => { x64::assemble!("sub rsp, 0x70") },
+    (@stack $count:tt) => { x64::assemble!("sub rsp, 0x30 + 0x10 * ((" $count "- 4) / 2)") },
 
     (@arg 0) => { "" },
     (@arg 1) => {
@@ -48,6 +37,15 @@ pub macro callconv_syscall {
             x64::callconv_syscall!(@arg 3)
         )
     },
+    // TODO either make a prev macro to do $count - 1 or use recursion with tt munching
+    /*(@arg $count:tt) => {
+        concat!(
+            x64::assemble!("mov rax, qword ptr [rcx + 0x20 + 8 * (" $count "- 5)]"),
+            x64::assemble!("mov qword ptr [rsp + 0x28 + 8 * (" $count "- 5)], rax"),
+            x64::callconv_syscall!(@arg $count - 1),
+        )
+    },*/
+
     (@arg 5) => {
         concat!(
             x64::assemble!("mov rax, qword ptr [rcx + 0x20]"),
@@ -133,16 +131,8 @@ pub macro callconv_win64 {
     (@stack 1) => { x64::assemble!("sub rsp, 0x30") },
     (@stack 2) => { x64::assemble!("sub rsp, 0x30") },
     (@stack 3) => { x64::assemble!("sub rsp, 0x30") },
-    (@stack 4) => { x64::assemble!("sub rsp, 0x30") },
-    (@stack 5) => { x64::assemble!("sub rsp, 0x30") },
-    (@stack 6) => { x64::assemble!("sub rsp, 0x40") },
-    (@stack 7) => { x64::assemble!("sub rsp, 0x40") },
-    (@stack 8) => { x64::assemble!("sub rsp, 0x50") },
-    (@stack 9) => { x64::assemble!("sub rsp, 0x50") },
-    (@stack 10) => { x64::assemble!("sub rsp, 0x60") },
-    (@stack 11) => { x64::assemble!("sub rsp, 0x60") },
-    (@stack 12) => { x64::assemble!("sub rsp, 0x70") },
-    (@stack 13) => { x64::assemble!("sub rsp, 0x70") },
+    (@stack $count:tt) => { x64::assemble!("sub rsp, 0x30 + 0x10 * ((" $count "- 4) / 2)") },
+
 
     (@arg 0) => { "" },
     (@arg 1) => {

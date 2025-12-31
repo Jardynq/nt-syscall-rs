@@ -12,19 +12,7 @@ pub macro enter_x64() {
 
 pub macro next_args {
     (0) => { "" },
-    (1) => { x86::assemble!("add ecx, 0x4") },
-    (2) => { x86::assemble!("add ecx, 0x8") },
-    (3) => { x86::assemble!("add ecx, 0xc") },
-    (4) => { x86::assemble!("add ecx, 0x10") },
-    (5) => { x86::assemble!("add ecx, 0x14") },
-    (6) => { x86::assemble!("add ecx, 0x18") },
-    (7) => { x86::assemble!("add ecx, 0x1c") },
-    (8) => { x86::assemble!("add ecx, 0x20") },
-    (9) => { x86::assemble!("add ecx, 0x24") },
-    (10) => { x86::assemble!("add ecx, 0x28") },
-    (11) => { x86::assemble!("add ecx, 0x2c") },
-    (12) => { x86::assemble!("add ecx, 0x30") },
-    (13) => { x86::assemble!("add ecx, 0x34") },
+    ($count:tt) => { x86::assemble!("add ecx, 4*" $count) },
 }
 
 pub macro prologue() {

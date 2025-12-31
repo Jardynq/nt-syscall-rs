@@ -14,19 +14,7 @@ pub macro enter_x86() {
 
 pub macro next_args {
     (0) => { "" },
-    (1) => { x64::assemble!("add rcx, 0x8") },
-    (2) => { x64::assemble!("add rcx, 0x10") },
-    (3) => { x64::assemble!("add rcx, 0x18") },
-    (4) => { x64::assemble!("add rcx, 0x20") },
-    (5) => { x64::assemble!("add rcx, 0x28") },
-    (6) => { x64::assemble!("add rcx, 0x30") },
-    (7) => { x64::assemble!("add rcx, 0x38") },
-    (8) => { x64::assemble!("add rcx, 0x40") },
-    (9) => { x64::assemble!("add rcx, 0x48") },
-    (10) => { x64::assemble!("add rcx, 0x50") },
-    (11) => { x64::assemble!("add rcx, 0x58") },
-    (12) => { x64::assemble!("add rcx, 0x60") },
-    (13) => { x64::assemble!("add rcx, 0x68") },
+    ($count:tt) => { x64::assemble!("add rcx, 8*" $count) },
 }
 
 pub macro prologue() {
