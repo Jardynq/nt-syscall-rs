@@ -1,7 +1,7 @@
 extern crate std;
 
 #[allow(unused_imports)]
-use crate::{asm, x64, x86};
+use crate::{asm, encode, x64, x86};
 use winapi::um::winnt::{MEM_COMMIT, MEM_RELEASE, MEM_RESERVE, PAGE_EXECUTE_READWRITE};
 
 #[cfg(target_arch = "x86_64")]
@@ -167,4 +167,15 @@ fn test_alloc_high() {
     let addr = alloc_high(SIZE);
     assert!(addr > u32::MAX as u64);
     free(addr);
+}
+
+#[test]
+fn test_encode() {
+    assert_eq!(
+        encode!(x64::enter_x86!()),
+        [
+            232, 0, 0, 0, 0, 199, 68, 36, 4, 35, 0, 0, 0, 131, 4, 36, 13, 203, 102, 140, 216, 102,
+            142, 208
+        ]
+    );
 }

@@ -20,7 +20,7 @@ pub fn assemble64(input: TokenStream) -> TokenStream {
 }
 
 #[proc_macro]
-pub fn __debug_clear_cache(_: TokenStream) -> TokenStream {
+pub fn _debug_clear_cache(_: TokenStream) -> TokenStream {
     let _ = fs::remove_dir_all(&*CACHE_PATH);
     TokenStream::new()
 }
@@ -54,13 +54,13 @@ fn inner(arch: &str, input: TokenStream) -> String {
     } else {
         kstool(arch, &insts)
             .into_iter()
-            .map(|b| b.to_string())
+            .map(|b| format!("{b:#04x}"))
             .collect::<Vec<_>>()
             .join(", ")
     };
 
     let _ = fs::write(&cache, &result);
-    format!("\".byte {}\"", result)
+    format!("\".byte {}\n\"", result)
 }
 
 fn kstool(arch: &str, insts: &str) -> Vec<u8> {
@@ -90,7 +90,7 @@ fn kstool(arch: &str, insts: &str) -> Vec<u8> {
     child.stdout.unwrap().read_to_end(&mut stdout).unwrap();
     let stdout_str = String::from_utf8_lossy(&stdout);
 
-    if !status.success() || stdout_str.starts_with("ERROR:") {
+    if !status.success() || stdout.is_empty() || stdout_str.starts_with("ERROR:") {
         panic!(
             "kstool.exe did not execute successfully: {}",
             stdout_str

@@ -3,9 +3,9 @@ use crate::{shared, x64, x86};
 
 pub macro enter_x86() {
     x64::assemble!(
-        "call $0",
-        "mov dword [rsp + 0x4], 0x23",
-        "add dword [rsp], 0xd",
+        "call +5",
+        "mov dword ptr [rsp + 0x4], 0x23",
+        "add dword ptr [rsp], 0xd",
         "retf",
         "mov ax, ds",
         "mov ss, ax"
@@ -51,7 +51,7 @@ pub macro syscall($count:tt) {
         x64::next_args!(2),
         x64::callconv_syscall!(@stack $count),
         x64::callconv_syscall!(@arg $count),
-        x64::assemble!("mov rax, qword [rcx - 0x10]"),
+        x64::assemble!("mov rax, qword ptr [rcx - 0x10]"),
         x64::assemble!("syscall"),
         x64::epilogue!(),
         x64::next_args!(1),
@@ -64,8 +64,8 @@ pub macro syscall($count:tt) {
 pub macro get_cpu_mode() {
     concat!(
         x64::assemble!("mov ax, cs"),
-        x64::assemble!("mov rdx, qword [rcx]"),
-        x64::assemble!("mov qword [rdx], rax"),
+        x64::assemble!("mov rdx, qword ptr [rcx]"),
+        x64::assemble!("mov qword ptr [rdx], rax"),
         next_args!(1)
     )
 }
@@ -74,8 +74,8 @@ pub macro peb_ptr() {
     concat!(
         x64::assemble!(
             "mov rax, gs:[0x60]",
-            "mov rdx, qword [rcx]",
-            "mov qword [rdx], rax"
+            "mov rdx, qword ptr [rcx]",
+            "mov qword ptr [rdx], rax"
         ),
         next_args!(1)
     )
@@ -85,8 +85,8 @@ pub macro teb_ptr() {
     concat!(
         x64::assemble!(
             "mov rax, gs:[0x30]",
-            "mov rdx, qword [rcx]",
-            "mov qword [rdx], rax"
+            "mov rdx, qword ptr [rcx]",
+            "mov qword ptr [rdx], rax"
         ),
         next_args!(1)
     )
@@ -98,9 +98,9 @@ pub macro memcopy() {
             "mov r8, rdi",
             "mov r9, rsi",
             "mov r10, rcx",
-            "mov rdi, qword [rcx]",
-            "mov rsi, qword [rcx + 0x8]",
-            "mov rcx, qword [rcx + 0x10]",
+            "mov rdi, qword ptr [rcx]",
+            "mov rsi, qword ptr [rcx + 0x8]",
+            "mov rcx, qword ptr [rcx + 0x10]",
             "cld",
             "rep movsb",
             "mov rcx, r10",
@@ -116,9 +116,9 @@ pub macro memset() {
             "mov r8, rdi",
             "mov r9, rsi",
             "mov r10, rcx",
-            "mov rdi, qword [rcx]",
-            "mov al, byte [rcx + 0x8]",
-            "mov rcx, qword [rcx + 0x10]",
+            "mov rdi, qword ptr [rcx]",
+            "mov al, byte ptr [rcx + 0x8]",
+            "mov rcx, qword ptr [rcx + 0x10]",
             "cld",
             "rep stosb",
             "mov rcx, r10",
@@ -131,10 +131,10 @@ pub macro memset() {
 pub macro memread_u64() {
     concat!(
         x64::assemble!(
-            "mov rax, qword [rcx]",
-            "mov rdx, qword [rcx + 0x8]",
-            "mov rdx, qword [rdx]",
-            "mov qword [rax], rdx",
+            "mov rax, qword ptr [rcx]",
+            "mov rdx, qword ptr [rcx + 0x8]",
+            "mov rdx, qword ptr [rdx]",
+            "mov qword ptr [rax], rdx",
         ),
         x64::next_args!(2),
     )
@@ -142,10 +142,10 @@ pub macro memread_u64() {
 pub macro memread_u32() {
     concat!(
         x64::assemble!(
-            "mov rax, qword [rcx]",
-            "mov rdx, qword [rcx + 0x8]",
-            "mov rdx, dword [rdx]",
-            "mov dword [rax], rdx",
+            "mov rax, qword ptr [rcx]",
+            "mov rdx, qword ptr [rcx + 0x8]",
+            "mov rdx, dword ptr [rdx]",
+            "mov dword ptr [rax], rdx",
         ),
         x64::next_args!(2),
     )
@@ -153,10 +153,10 @@ pub macro memread_u32() {
 pub macro memread_u16() {
     concat!(
         x64::assemble!(
-            "mov rax, qword [rcx]",
-            "mov rdx, qword [rcx + 0x8]",
-            "mov rdx, word [rdx]",
-            "mov word [rax], rdx",
+            "mov rax, qword ptr [rcx]",
+            "mov rdx, qword ptr [rcx + 0x8]",
+            "mov rdx, word ptr [rdx]",
+            "mov word ptr [rax], rdx",
         ),
         x64::next_args!(2),
     )
@@ -164,10 +164,10 @@ pub macro memread_u16() {
 pub macro memread_u8() {
     concat!(
         x64::assemble!(
-            "mov rax, qword [rcx]",
-            "mov rdx, qword [rcx + 0x8]",
-            "mov rdx, byte [rdx]",
-            "mov byte [rax], rdx",
+            "mov rax, qword ptr [rcx]",
+            "mov rdx, qword ptr [rcx + 0x8]",
+            "mov rdx, byte ptr [rdx]",
+            "mov byte ptr [rax], rdx",
         ),
         x64::next_args!(2),
     )
@@ -175,7 +175,7 @@ pub macro memread_u8() {
 
 pub macro jump() {
     concat!(
-        x64::assemble!("mov rax, qword [rcx]"),
+        x64::assemble!("mov rax, qword ptr [rcx]"),
         x64::next_args!(1),
         x64::assemble!("jmp rax"),
     )
@@ -184,7 +184,7 @@ pub macro jump() {
 macro call_inner($conv:tt, $ret:tt, $count:tt) {
     concat!(
         x64::prologue!(),
-        x64::assemble!("mov r11, qword [rcx]"),
+        x64::assemble!("mov r11, qword ptr [rcx]"),
         x64::next_args!(2),
         x64::$conv!(@arg $count),
         x64::assemble!("call r11"),
