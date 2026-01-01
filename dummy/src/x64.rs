@@ -48,16 +48,16 @@ pub unsafe extern "win64" fn win64_complex(
     a2: u16,
     a3: u32,
     a4: u64,
-    a5: f64, // TODO change back to f32 when support is added
+    a5: f64,
     a6: f64,
     a7: &u32,
     a8: *mut u32,
-) -> f64 {
+) -> f32 {
     unsafe { *a8 = 0x123 };
     let a1 = cast_f64!(a1);
     let a2 = cast_f64!(a2);
     let a3 = cast_f64!(a3);
     let a4 = cast_f64!(a4);
     let a7 = cast_f64!(*a7);
-    a1 + a2 + a3 + a4 + a5 + a6 + a7
+    (a1 + a2 + a3 + a4 + a5 as f64 + a6 + a7) as f32
 }

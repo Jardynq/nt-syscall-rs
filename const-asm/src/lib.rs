@@ -20,7 +20,7 @@ pub fn assemble64(input: TokenStream) -> TokenStream {
 }
 
 #[proc_macro]
-pub fn _debug_clear_cache(_: TokenStream) -> TokenStream {
+pub fn __debug_clear_cache(_: TokenStream) -> TokenStream {
     let _ = fs::remove_dir_all(&*CACHE_PATH);
     TokenStream::new()
 }
@@ -111,12 +111,18 @@ fn parse_input(input: TokenStream) -> String {
                 let line = lit.to_string();
                 current.push_str(line.trim_matches('"'));
             }
-            TokenTree::Punct(punct) if punct.as_char() == ',' => {
-                if !current.is_empty() {
-                    lines.push(current.trim().to_string());
-                    current.clear();
+            TokenTree::Punct(punct) => match punct.as_char() {
+                '+' | '-' | '*' => {
+                    current.push(punct.as_char());
                 }
-            }
+                ',' => {
+                    if !current.is_empty() {
+                        lines.push(current.trim().to_string());
+                        current.clear();
+                    }
+                }
+                _ => panic!("Unexpected token in input: {:?}", punct),
+            },
             _ => panic!("Unexpected token in input: {:?}", token),
         }
     }

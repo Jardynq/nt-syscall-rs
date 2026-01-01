@@ -68,7 +68,6 @@ pub macro peb_ptr() {
         next_args!(1)
     )
 }
-
 pub macro teb_ptr() {
     concat!(
         x64::assemble!(
@@ -169,23 +168,20 @@ pub macro jump() {
     )
 }
 
-macro call_inner($conv:tt, $ret:tt, $count:tt) {
+macro call_inner($conv:tt, $ret:tt : $($args:tt)*) {
     concat!(
         x64::prologue!(),
         x64::assemble!("mov r11, qword ptr [rcx]"),
         x64::next_args!(2),
-        x64::$conv!(@arg $count),
+        x64::$conv!($($args)*),
         x64::assemble!("call r11"),
         x64::epilogue!(),
         x64::next_args!(1),
         x64::$conv!(@ret $ret),
         x64::next_args!(1),
-        x64::next_args!($count),
+        //x64::next_args!($count), TODO
     )
 }
-pub macro call_x64_win64_float($count:tt) {
-    call_inner!(callconv_win64, float, $count)
-}
-pub macro call_x64_win64($count:tt) {
-    call_inner!(callconv_win64, int, $count)
+pub macro call_x64_win64($ret:tt : $($args:tt)*) {
+    call_inner!(callconv_win64, $ret : $($args)*)
 }

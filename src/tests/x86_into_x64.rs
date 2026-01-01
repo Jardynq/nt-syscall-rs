@@ -201,7 +201,7 @@ fn call_low() {
         asm!(
             args,
             x86::enter_x64!(),
-            x64::call_x64_win64!(0),
+            x64::call_x64_win64!(u64:),
             x64::enter_x86!(),
         );
         assert_eq!(retval as u32, 0x123);
@@ -224,7 +224,7 @@ fn call_high_win64_simple() {
         asm!(
             args,
             x86::enter_x64!(),
-            x64::call_x64_win64!(0),
+            x64::call_x64_win64!(u64:),
             x64::enter_x86!()
         );
         assert_eq!(retval, 0x123);
@@ -249,7 +249,7 @@ fn call_high_win64_simple_float() {
         asm!(
             args,
             x86::enter_x64!(),
-            x64::call_x64_win64_float!(0),
+            x64::call_x64_win64!(f64:),
             x64::enter_x86!()
         );
         assert_eq!(f64::from_bits(retval), 123.123);
@@ -271,11 +271,11 @@ fn call_high_win64_complex() {
         let a2 = 2;
         let a3 = 3;
         let a4 = 4;
-        let a5 = 5.0f32;
+        let a5 = 5.0f64; // Args API currently only supports f64
         let a6 = 6.0f64;
         let a7: u64 = 7;
-        let mut a8: u64 = 0;
-        let mut retval: u64 = 0;
+        let mut a8: u64 = 0xdeadbeef;
+        let mut retval: u64 = 0xcafebabe; // TODO update args api to allow any type
         let args = x64::args!(
             target,
             &mut retval,
@@ -292,12 +292,12 @@ fn call_high_win64_complex() {
         asm!(
             args,
             x86::enter_x64!(),
-            x64::call_x64_win64_float!(8),
+            x64::call_x64_win64!(f64: u8, u16, u32, u64, f64, f64, &u32, *mut u32,),
             x64::enter_x86!()
         );
 
         assert_eq!(a8 as u32, 0x123);
-        assert_eq!(f64::from_bits(retval).round(), 28.0f64);
+        assert_eq!(f32::from_bits(retval as u32).round(), 28.0f32);
         free(target);
     }
 }

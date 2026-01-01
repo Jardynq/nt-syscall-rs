@@ -68,7 +68,6 @@ pub macro peb_ptr() {
         x86::next_args!(1),
     )
 }
-
 pub macro teb_ptr() {
     concat!(
         x86::assemble!("mov eax, fs:[0x18]"),
