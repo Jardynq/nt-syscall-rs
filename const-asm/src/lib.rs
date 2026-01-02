@@ -52,14 +52,15 @@ fn inner(arch: &str, input: TokenStream) -> String {
     let result = if let Ok(result) = fs::read_to_string(&cache) {
         result
     } else {
-        kstool(arch, &insts)
+        let result = kstool(arch, &insts)
             .into_iter()
             .map(|b| format!("{b:#04x}"))
             .collect::<Vec<_>>()
-            .join(", ")
+            .join(", ");
+        let _ = fs::write(&cache, &result);
+        result
     };
 
-    let _ = fs::write(&cache, &result);
     format!("\".byte {}\n\"", result)
 }
 

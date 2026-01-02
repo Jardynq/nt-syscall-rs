@@ -204,15 +204,15 @@ fn call_low() {
     }
     unsafe {
         let target = target as *const ();
-        let mut retval: u64 = 0;
+        let mut retval: u32 = 0;
         let args = x64::args!(target, ptr: &mut retval);
         asm!(
             args,
             x86::enter_x64!(),
-            x64::call_x64_win64!(u64:),
+            x64::call_x64_win64!(u32:),
             x64::enter_x86!(),
         );
-        assert_eq!(retval as u32, 0x123);
+        assert_eq!(retval, 0x123);
     }
 }
 
@@ -323,20 +323,16 @@ fn call_high_win64_complex2() {
         let a2 = 20.0f32;
         let a3 = 30.0f64;
         let a4 = 40.0f32;
-        let mut out: f64 = 123.123;
+        let mut out: f32 = 123.123;
         let args = x64::args!(
             target,
             0,
-            a1,
-            a2,
-            a3,
-            a4,
+            f32: a1,
+            f32: a2,
+            f64: a3,
+            f32: a4,
             ptr: &mut out,
         );
-
-        // TODO apparently f32 ptr does not work
-        // Maybe something to do with movss
-        // Might have to push f32 to the right or left inside the u64 buffer chunk
 
         asm!(
             args,
@@ -345,7 +341,7 @@ fn call_high_win64_complex2() {
             x64::enter_x86!()
         );
 
-        assert_eq!(out.round(), 100.0f64);
+        assert_eq!(out.round(), 100.0f32);
         free(target);
     }
 }
