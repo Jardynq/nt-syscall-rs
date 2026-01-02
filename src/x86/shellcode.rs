@@ -10,11 +10,6 @@ pub macro enter_x64() {
     )
 }
 
-pub macro next_args {
-    (0) => { "" },
-    ($count:tt) => { x86::assemble!("add ecx, 4*" $count) },
-}
-
 pub macro prologue() {
     concat!(
         x86::assemble!("push ebp"),
@@ -32,22 +27,21 @@ pub macro epilogue() {
 
 pub macro syscall($count:tt) {
     concat!(
-        x86::prologue(),
+        x86::prologue!(),
         x86::callconv_syscall!(@arg $count),
-        x86::encode!(
+        x86::assemble!(
             "mov eax, dword ptr [ecx]",
             "mov edx, esp",
             "sub edx, 0x8",
             "call $0",
             "add dword ptr [esp - 0x4], 0x6",
             "sysenter"),
-        x86::epilogue(),
-        x86::encode!(
+        x86::epilogue!(),
+        x86::assemble!(
             "mov edx, dword ptr [ecx + 0x4]",
             "mov dword ptr [edx], eax",
         ),
-        x86::next_args!(2),
-        x86::next_args!($count)
+        x86::next_args!(@ 2 + $count)
     )
 }
 

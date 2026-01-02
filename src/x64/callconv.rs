@@ -111,11 +111,8 @@ pub macro callconv_syscall {
     },
 }
 
+// TODO add support for varargs by always moving in xmm and rex
 pub macro callconv_win64 {
-    (@arg ($($count:tt)+), &mut u8      $(, $($tail:tt)* )?) => { x64::callconv_win64!(@arg ($($count)+), u64 $(, $($tail)* )?) },
-    (@arg ($($count:tt)+), &u8          $(, $($tail:tt)* )?) => { x64::callconv_win64!(@arg ($($count)+), u64 $(, $($tail)* )?) },
-    (@arg ($($count:tt)+), *mut u8      $(, $($tail:tt)* )?) => { x64::callconv_win64!(@arg ($($count)+), u64 $(, $($tail)* )?) },
-    (@arg ($($count:tt)+), *const u8    $(, $($tail:tt)* )?) => { x64::callconv_win64!(@arg ($($count)+), u64 $(, $($tail)* )?) },
     (@arg (0), u8  $(, $($tail:tt)* )?) => {
         concat!(
             x64::callconv_win64!(@arg (1) $(, $($tail)* )?),
@@ -148,10 +145,6 @@ pub macro callconv_win64 {
         )
     },
 
-    (@arg ($($count:tt)+), &mut u16     $(, $($tail:tt)* )?) => { x64::callconv_win64!(@arg ($($count)+), u64 $(, $($tail)* )?) },
-    (@arg ($($count:tt)+), &u16         $(, $($tail:tt)* )?) => { x64::callconv_win64!(@arg ($($count)+), u64 $(, $($tail)* )?) },
-    (@arg ($($count:tt)+), *mut u16     $(, $($tail:tt)* )?) => { x64::callconv_win64!(@arg ($($count)+), u64 $(, $($tail)* )?) },
-    (@arg ($($count:tt)+), *const u16   $(, $($tail:tt)* )?) => { x64::callconv_win64!(@arg ($($count)+), u64 $(, $($tail)* )?) },
     (@arg (0), u16  $(, $($tail:tt)* )?) => {
         concat!(
             x64::callconv_win64!(@arg (1) $(, $($tail)* )?),
@@ -184,10 +177,6 @@ pub macro callconv_win64 {
         )
     },
 
-    (@arg ($($count:tt)+), &mut u32     $(, $($tail:tt)* )?) => { x64::callconv_win64!(@arg ($($count)+), u64 $(, $($tail)* )?) },
-    (@arg ($($count:tt)+), &u32         $(, $($tail:tt)* )?) => { x64::callconv_win64!(@arg ($($count)+), u64 $(, $($tail)* )?) },
-    (@arg ($($count:tt)+), *mut u32     $(, $($tail:tt)* )?) => { x64::callconv_win64!(@arg ($($count)+), u64 $(, $($tail)* )?) },
-    (@arg ($($count:tt)+), *const u32   $(, $($tail:tt)* )?) => { x64::callconv_win64!(@arg ($($count)+), u64 $(, $($tail)* )?) },
     (@arg (0), u32  $(, $($tail:tt)* )?) => {
         concat!(
             x64::callconv_win64!(@arg (1) $(, $($tail)* )?),
@@ -220,10 +209,6 @@ pub macro callconv_win64 {
         )
     },
 
-    (@arg ($($count:tt)+), &mut u64     $(, $($tail:tt)* )?) => { x64::callconv_win64!(@arg ($($count)+), u64 $(, $($tail)* )?) },
-    (@arg ($($count:tt)+), &u64         $(, $($tail:tt)* )?) => { x64::callconv_win64!(@arg ($($count)+), u64 $(, $($tail)* )?) },
-    (@arg ($($count:tt)+), *mut u64     $(, $($tail:tt)* )?) => { x64::callconv_win64!(@arg ($($count)+), u64 $(, $($tail)* )?) },
-    (@arg ($($count:tt)+), *const u64   $(, $($tail:tt)* )?) => { x64::callconv_win64!(@arg ($($count)+), u64 $(, $($tail)* )?) },
     (@arg (0), u64  $(, $($tail:tt)* )?) => {
         concat!(
             x64::callconv_win64!(@arg (1) $(, $($tail)* )?),
@@ -256,10 +241,6 @@ pub macro callconv_win64 {
         )
     },
 
-    (@arg ($($count:tt)+), &mut f32     $(, $($tail:tt)* )?) => { x64::callconv_win64!(@arg ($($count)+), u64 $(, $($tail)* )?) },
-    (@arg ($($count:tt)+), &f32         $(, $($tail:tt)* )?) => { x64::callconv_win64!(@arg ($($count)+), u64 $(, $($tail)* )?) },
-    (@arg ($($count:tt)+), *mut f32     $(, $($tail:tt)* )?) => { x64::callconv_win64!(@arg ($($count)+), u64 $(, $($tail)* )?) },
-    (@arg ($($count:tt)+), *const f32   $(, $($tail:tt)* )?) => { x64::callconv_win64!(@arg ($($count)+), u64 $(, $($tail)* )?) },
     (@arg (0), f32  $(, $($tail:tt)* )?) => {
         concat!(
             x64::callconv_win64!(@arg (1) $(, $($tail)* )?),
@@ -292,10 +273,6 @@ pub macro callconv_win64 {
         )
     },
 
-    (@arg ($($count:tt)+), &mut f64     $(, $($tail:tt)* )?) => { x64::callconv_win64!(@arg ($($count)+), u64 $(, $($tail)* )?) },
-    (@arg ($($count:tt)+), &f64         $(, $($tail:tt)* )?) => { x64::callconv_win64!(@arg ($($count)+), u64 $(, $($tail)* )?) },
-    (@arg ($($count:tt)+), *mut f64     $(, $($tail:tt)* )?) => { x64::callconv_win64!(@arg ($($count)+), u64 $(, $($tail)* )?) },
-    (@arg ($($count:tt)+), *const f64   $(, $($tail:tt)* )?) => { x64::callconv_win64!(@arg ($($count)+), u64 $(, $($tail)* )?) },
     (@arg (0), f64  $(, $($tail:tt)* )?) => {
         concat!(
             x64::callconv_win64!(@arg (1) $(, $($tail)* )?),
@@ -328,6 +305,7 @@ pub macro callconv_win64 {
         )
     },
 
+    (@ret ()) => { "" },
     (@ret u8) => {
         concat!(
             x64::assemble!("mov rdx, qword ptr [rcx]"),
@@ -365,10 +343,7 @@ pub macro callconv_win64 {
         )
     },
 
-    (@arg ($($count:tt)+), &mut ()      $(, $($tail:tt)* )?) => { x64::callconv_win64!(@arg ($($count)+), u64 $(, $($tail)* )?) },
-    (@arg ($($count:tt)+), &()          $(, $($tail:tt)* )?) => { x64::callconv_win64!(@arg ($($count)+), u64 $(, $($tail)* )?) },
-    (@arg ($($count:tt)+), *mut ()      $(, $($tail:tt)* )?) => { x64::callconv_win64!(@arg ($($count)+), u64 $(, $($tail)* )?) },
-    (@arg ($($count:tt)+), *const ()    $(, $($tail:tt)* )?) => { x64::callconv_win64!(@arg ($($count)+), u64 $(, $($tail)* )?) },
+    (@arg ($($count:tt)+), ptr $(, $($tail:tt)* )?) => { x64::callconv_win64!(@arg ($($count)+), u64 $(, $($tail)* )?) },
 
     (@arg ($($count:tt)+) $(,)?) => { x64::callconv_win64!(@stack ($($count)+)) },
     (@stack (0)) => { x64::assemble!("sub rsp, 0x30") },

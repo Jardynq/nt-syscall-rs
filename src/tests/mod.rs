@@ -78,12 +78,12 @@ fn alloc(mut address: u64, mut size: u64) -> Result<u64, u32> {
         let id = NT_VIRTUAL_MEMORY_IDS.0;
         let mut status: u64 = 0;
         let args = x64::args!(
-            id,
-            &mut status,
+            u32: id,
+            ptr: &mut status,
             -1i64,
-            &mut address,
+            ptr: &mut address,
             0,
-            &mut size,
+            ptr: &mut size,
             MEM_RESERVE | MEM_COMMIT,
             PAGE_EXECUTE_READWRITE
         );
@@ -134,10 +134,10 @@ fn free(mut address: u64) {
         let id = NT_VIRTUAL_MEMORY_IDS.1;
         let args = x64::args!(
             id,
-            &mut status,
+            ptr: &mut status,
             -1isize,
-            &mut address,
-            &mut size,
+            ptr: &mut address,
+            ptr: &mut size,
             MEM_RELEASE
         );
 

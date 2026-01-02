@@ -6,9 +6,9 @@ use std::vec;
 fn cpu_mode() {
     emu_only!();
 
-    let mut mode: u64 = 0;
+    let mut mode: u16 = 0;
     unsafe {
-        let args = x64::args!(&mut mode);
+        let args = x64::args!(ptr: &mut mode);
         asm!(
             args,
             x86::enter_x64!(),
@@ -16,7 +16,7 @@ fn cpu_mode() {
             x64::enter_x86!()
         );
     };
-    let mode = CpuMode::from(mode as u16);
+    let mode = CpuMode::from(mode);
     assert_eq!(mode.host, CpuType::X64);
     assert_eq!(mode.user, CpuType::X64);
 }
@@ -28,7 +28,10 @@ fn peb_teb() {
     unsafe {
         let mut peb: u64 = 0;
         let mut teb: u64 = 0;
-        let args = x64::args!(&mut peb, &mut teb);
+        let args = x64::args!(
+            ptr: &mut peb,
+            ptr: &mut teb
+        );
         asm!(
             args,
             x86::enter_x64!(),
@@ -39,7 +42,12 @@ fn peb_teb() {
 
         let mut peb_from_teb: u64 = 0;
         let mut teb_from_teb: u64 = 0;
-        let args = x64::args!(&mut peb_from_teb, teb + 0x60, &mut teb_from_teb, teb + 0x30);
+        let args = x64::args!(
+            ptr: &mut peb_from_teb,
+            teb + 0x60,
+            ptr: &mut teb_from_teb,
+            teb + 0x30
+        );
         asm!(
             args,
             x86::enter_x64!(),
@@ -107,11 +115,11 @@ fn memcopy_high() {
     const OTHER: &[u8] = "a\0b\0c\0d\0e\0f\0g\0h\0i\0j\0".as_bytes();
     unsafe {
         let mut peb: u64 = 0;
-        let args = x64::args!(&mut peb);
+        let args = x64::args!(ptr: &mut peb);
         asm!(args, x86::enter_x64!(), x64::peb_ptr!(), x64::enter_x86!());
 
         let mut ldr_ptr: u64 = 0;
-        let args = x64::args!(&mut ldr_ptr, peb + 0x18);
+        let args = x64::args!(ptr: &mut ldr_ptr, peb + 0x18);
         asm!(
             args,
             x86::enter_x64!(),
@@ -120,7 +128,7 @@ fn memcopy_high() {
         );
 
         let mut entry_ptr: u64 = 0;
-        let args = x64::args!(&mut entry_ptr, ldr_ptr + 0x10);
+        let args = x64::args!(ptr: &mut entry_ptr, ldr_ptr + 0x10);
         asm!(
             args,
             x86::enter_x64!(),
@@ -129,7 +137,7 @@ fn memcopy_high() {
         );
 
         let mut name_ptr: u64 = 0;
-        let args = x64::args!(&mut name_ptr, entry_ptr + 0x60);
+        let args = x64::args!(ptr: &mut name_ptr, entry_ptr + 0x60);
         asm!(
             args,
             x86::enter_x64!(),
@@ -169,7 +177,7 @@ fn jump_low() {
         panic!()
     }
     unsafe {
-        let args = x64::args!(fn panic2);
+        let args = x64::args!(ptr: panic2 as *const ());
         asm!(args, x86::enter_x64!(), x64::jump!());
     }
 }
@@ -180,7 +188,7 @@ fn syscall_bad_id() {
 
     unsafe {
         let mut status: u64 = 0;
-        let args = x64::args!(0xfff, &mut status);
+        let args = x64::args!(0xfff, ptr: &mut status);
         asm!(args, x86::enter_x64!(), x64::syscall!(0), x64::enter_x86!());
         assert_eq!(status, 0xc000001c);
     }
@@ -197,7 +205,7 @@ fn call_low() {
     unsafe {
         let target = target as *const ();
         let mut retval: u64 = 0;
-        let args = x64::args!(target, &mut retval);
+        let args = x64::args!(target, ptr: &mut retval);
         asm!(
             args,
             x86::enter_x64!(),
@@ -220,7 +228,7 @@ fn call_high_win64_simple() {
         asm!(args, x86::enter_x64!(), x64::memcopy!(), x64::enter_x86!());
 
         let mut retval: u64 = 0;
-        let args = x64::args!(target, &mut retval);
+        let args = x64::args!(target, ptr: &mut retval);
         asm!(
             args,
             x86::enter_x64!(),
@@ -243,16 +251,15 @@ fn call_high_win64_simple_float() {
         let args = x64::args!(target, dummy_x64::WIN64_SIMPLE_F32.as_ptr(), SIZE);
         asm!(args, x86::enter_x64!(), x64::memcopy!(), x64::enter_x86!());
 
-        // let mut retval: f64 = 0;     TODO: update args api to allow any type
-        let mut retval: u64 = 0;
-        let args = x64::args!(target, &mut retval);
+        let mut retval: f64 = 0.0;
+        let args = x64::args!(target, ptr: &mut retval);
         asm!(
             args,
             x86::enter_x64!(),
             x64::call_x64_win64!(f64:),
             x64::enter_x86!()
         );
-        assert_eq!(f64::from_bits(retval), 123.123);
+        assert_eq!(retval, 123.123);
         free(target);
     }
 }
@@ -271,33 +278,74 @@ fn call_high_win64_complex() {
         let a2 = 2;
         let a3 = 3;
         let a4 = 4;
-        let a5 = 5.0f64; // Args API currently only supports f64
+        let a5 = 5.0f32;
         let a6 = 6.0f64;
-        let a7: u64 = 7;
-        let mut a8: u64 = 0xdeadbeef;
-        let mut retval: u64 = 0xcafebabe; // TODO update args api to allow any type
+        let a7: u32 = 7;
+        let mut a8: u32 = 0xdeadbeef;
+        let mut retval: f32 = 0.0;
         let args = x64::args!(
             target,
-            &mut retval,
+            ptr: &mut retval,
             a1,
             a2,
             a3,
             a4,
-            float a5,
-            float a6,
-            &a7,
-            &mut a8,
+            f32: a5,
+            f64: a6,
+            ptr: &a7,
+            ptr: &mut a8,
         );
 
         asm!(
             args,
             x86::enter_x64!(),
-            x64::call_x64_win64!(f64: u8, u16, u32, u64, f64, f64, &u32, *mut u32,),
+            x64::call_x64_win64!(f32: u8, u16, u32, u64, f32, f64, ptr, ptr,),
             x64::enter_x86!()
         );
 
-        assert_eq!(a8 as u32, 0x123);
-        assert_eq!(f32::from_bits(retval as u32).round(), 28.0f32);
+        assert_eq!(a8, 0x123);
+        assert_eq!(retval.round(), 28.0f32);
+        free(target);
+    }
+}
+
+#[test]
+fn call_high_win64_complex2() {
+    emu_only!();
+
+    unsafe {
+        const SIZE: u64 = dummy_x64::WIN64_COMPLEX2.len() as u64;
+        let target = alloc_high(SIZE);
+        let args = x64::args!(target, dummy_x64::WIN64_COMPLEX2.as_ptr(), SIZE);
+        asm!(args, x86::enter_x64!(), x64::memcopy!(), x64::enter_x86!());
+
+        let a1 = 10.0f32;
+        let a2 = 20.0f32;
+        let a3 = 30.0f64;
+        let a4 = 40.0f32;
+        let mut out: f64 = 123.123;
+        let args = x64::args!(
+            target,
+            0,
+            a1,
+            a2,
+            a3,
+            a4,
+            ptr: &mut out,
+        );
+
+        // TODO apparently f32 ptr does not work
+        // Maybe something to do with movss
+        // Might have to push f32 to the right or left inside the u64 buffer chunk
+
+        asm!(
+            args,
+            x86::enter_x64!(),
+            x64::call_x64_win64!((): f32, f32, f64, f32, ptr),
+            x64::enter_x86!()
+        );
+
+        assert_eq!(out.round(), 100.0f64);
         free(target);
     }
 }

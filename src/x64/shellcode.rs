@@ -12,11 +12,6 @@ pub macro enter_x86() {
     )
 }
 
-pub macro next_args {
-    (0) => { "" },
-    ($count:tt) => { x64::assemble!("add rcx, 8*" $count) },
-}
-
 pub macro prologue() {
     concat!(
         x64::assemble!("push rbp"),
@@ -44,8 +39,7 @@ pub macro syscall($count:tt) {
         x64::epilogue!(),
         x64::next_args!(1),
         x64::callconv_syscall!(@ret),
-        x64::next_args!(1),
-        x64::next_args!($count)
+        x64::next_args!(@ 1 + $count)
     )
 }
 
@@ -54,7 +48,7 @@ pub macro get_cpu_mode() {
         x64::assemble!("mov ax, cs"),
         x64::assemble!("mov rdx, qword ptr [rcx]"),
         x64::assemble!("mov qword ptr [rdx], rax"),
-        next_args!(1)
+        x64::next_args!(1)
     )
 }
 
@@ -65,7 +59,7 @@ pub macro peb_ptr() {
             "mov rdx, qword ptr [rcx]",
             "mov qword ptr [rdx], rax"
         ),
-        next_args!(1)
+        x64::next_args!(1)
     )
 }
 pub macro teb_ptr() {
@@ -75,7 +69,7 @@ pub macro teb_ptr() {
             "mov rdx, qword ptr [rcx]",
             "mov qword ptr [rdx], rax"
         ),
-        next_args!(1)
+        x64::next_args!(1)
     )
 }
 
@@ -168,20 +162,19 @@ pub macro jump() {
     )
 }
 
-macro call_inner($conv:tt, $ret:tt : $($args:tt)*) {
+macro call_inner($conv:tt, $ret:tt : $($arg:tt)*) {
     concat!(
         x64::prologue!(),
         x64::assemble!("mov r11, qword ptr [rcx]"),
         x64::next_args!(2),
-        x64::$conv!($($args)*),
+        x64::$conv!($($arg)*),
         x64::assemble!("call r11"),
         x64::epilogue!(),
         x64::next_args!(1),
         x64::$conv!(@ret $ret),
-        x64::next_args!(1),
-        //x64::next_args!($count), TODO
+        x64::next_args!(1 + $($arg)*),
     )
 }
-pub macro call_x64_win64($ret:tt : $($args:tt)*) {
-    call_inner!(callconv_win64, $ret : $($args)*)
+pub macro call_x64_win64($ret:tt : $($arg:tt)*) {
+    call_inner!(callconv_win64, $ret : $($arg)*)
 }

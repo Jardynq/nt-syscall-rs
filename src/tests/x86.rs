@@ -4,13 +4,13 @@ use crate::*;
 fn cpu_mode() {
     let mode = CpuMode::default();
 
-    let mut mode2: u32 = 0;
-    let args = x86::args!(&mut mode2);
+    let mut mode2: u16 = 0;
+    let args = x86::args!(ptr: &mut mode2);
     unsafe {
         asm!(args, x86::get_cpu_mode!());
     };
 
-    assert_eq!(mode.value(), mode2 as u16);
+    assert_eq!(mode.value(), mode2);
     assert_eq!(mode.user, CpuType::X86);
     assert!(mode.host == CpuType::X64 || mode.host == CpuType::X86);
 }
@@ -20,7 +20,10 @@ fn peb_teb() {
     unsafe {
         let mut peb: u32 = 0;
         let mut teb: u32 = 0;
-        let args = x86::args!(&mut peb, &mut teb);
+        let args = x86::args!(
+            ptr: &mut peb,
+            ptr: &mut teb
+        );
         asm!(args, x86::peb_ptr!(), x86::teb_ptr!());
 
         let peb_from_teb = *((teb + 0x30) as *const u32);
@@ -41,7 +44,12 @@ fn args_fn() {
         assert!(arg0 != 0x1111 && arg1 != 0x2222 && arg2 != 0x3333);
     }
 
-    let args = x86::args!(arg0, arg1, fn panic2, arg2);
+    let args = x86::args!(
+        arg0,
+        arg1,
+        ptr: panic2 as *const (),
+        arg2
+    );
     unsafe {
         asm!(
             args,
@@ -71,7 +79,15 @@ fn args() {
         panic!("Failed asm comparison.")
     }
 
-    let args = x86::args!(arg0, arg1, arg2, &ptr3, &mut ptr4, &mut ptr5, fn panic2);
+    let args = x86::args!(
+        arg0,
+        arg1,
+        arg2,
+        ptr: &ptr3,
+        ptr: &mut ptr4,
+        ptr: &mut ptr5,
+        ptr: panic2 as *const ()
+    );
     unsafe {
         asm!(
             args,
@@ -81,17 +97,18 @@ fn args() {
             "je 2f\n",
             "call edx\n",
             "2:\n",
-            "mov eax, [ecx + 4]\n",
+            x86::next_args!(@ 0 + 1 + 0),
+            "mov eax, [ecx]\n",
             "cmp eax, 0x2222\n",
             "je 3f\n",
             "call edx\n",
             "3:\n",
-            "mov eax, [ecx + 8]\n",
+            "mov eax, [ecx + 4]\n",
             "cmp eax, 0x3333\n",
             "je 4f\n",
             "call edx\n",
             "4:\n",
-            x86::next_args!(3),
+            x86::next_args!(1 + u32),
             "mov eax, [ecx]\n",
             "mov eax, [eax]\n",
             "cmp eax, 0x4444\n",
@@ -102,7 +119,7 @@ fn args() {
             "mov dword ptr [eax], 0x1234\n",
             "mov eax, [ecx + 8]\n",
             "mov dword ptr [eax], 0x5678\n",
-            x86::next_args!(3),
+            x86::next_args!(1 + u32, u32),
         )
     };
 
@@ -118,9 +135,10 @@ fn args() {
 fn syscall_bad_id() {
     native_only!();
 
-    // TODO
-    /*unsafe {
-        let status = x86::inline::syscall_native!((0xfff));
+    unsafe {
+        let mut status: u32 = 0;
+        let args = x86::args!(0xfff, ptr: &mut status);
+        asm!(args, x86::syscall!(0));
         assert_eq!(status, 0xc000001c);
-    }*/
+    }
 }
