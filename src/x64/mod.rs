@@ -10,7 +10,7 @@ pub macro args($($args:tt)*) {
 }
 pub macro next_args {
     (@ 0) => { "" },
-    (@ $($count:tt)*) => { assemble!("add rcx, 8 * (" $($count)* ")") },
+    (@ $($count:tt)+) => { assemble!("add rcx, 8 * (" $($count)+ ")") },
 
     ($count:tt)                 => { next_args!(@ $count) },
     ($count:tt + $($arg:tt)*)   => { crate::shared::count_types!(next_args ($count), $($arg)*)},
