@@ -1,6 +1,5 @@
 use crate::tests::*;
 use crate::*;
-use std::vec;
 
 #[test]
 fn cpu_mode() {
@@ -84,7 +83,7 @@ fn memset_high() {
         let args = x64::args!(target, 0x42, SIZE);
         asm!(args, x86::enter_x64!(), x64::memset!(), x64::enter_x86!());
 
-        let mut buffer = vec![0u8; SIZE as usize];
+        let mut buffer = std::vec![0u8; SIZE as usize];
         let args = x64::args!(buffer.as_mut_ptr(), target, SIZE);
         asm!(args, x86::enter_x64!(), x64::memcopy!(), x64::enter_x86!());
         for byte in buffer {

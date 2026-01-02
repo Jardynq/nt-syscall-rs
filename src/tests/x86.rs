@@ -34,6 +34,18 @@ fn peb_teb() {
 }
 
 #[test]
+fn syscall_bad_id() {
+    native_only!();
+
+    unsafe {
+        let mut status: u32 = 0;
+        let args = x86::args!(0xfff, ptr: &mut status);
+        asm!(args, x86::syscall!(0));
+        assert_eq!(status, 0xc000001c);
+    }
+}
+
+#[test]
 #[should_panic]
 fn args_fn() {
     let arg0: u32 = 0x1111;
@@ -61,7 +73,7 @@ fn args_fn() {
             "push eax\n",
             "mov edx, [ecx + 0x8]\n",
             "call edx\n",
-            x86::next_args!(5),
+            x86::next_args!(4),
         )
     };
 }
@@ -129,16 +141,4 @@ fn args() {
     assert_eq!(ptr3, 0x4444);
     assert_eq!(ptr4, 0x1234);
     assert_eq!(ptr5, 0x5678);
-}
-
-#[test]
-fn syscall_bad_id() {
-    native_only!();
-
-    unsafe {
-        let mut status: u32 = 0;
-        let args = x86::args!(0xfff, ptr: &mut status);
-        asm!(args, x86::syscall!(0));
-        assert_eq!(status, 0xc000001c);
-    }
 }
