@@ -95,7 +95,7 @@ macro call_inner($conv:tt, $ret:tt : $($arg:tt)*) {
 pub macro call_cdecl($ret:tt : $($arg:tt)*) {
     call_inner!(callconv_cdecl, $ret : $($arg)*)
 }
-pub macro callconv_fastcall($ret:tt : $($arg:tt)*) {
+pub macro call_fastcall($ret:tt : $($arg:tt)*) {
     call_inner!(callconv_fastcall, $ret : $($arg)*)
 }
 pub macro call_stdcall($ret:tt : $($arg:tt)*) {
