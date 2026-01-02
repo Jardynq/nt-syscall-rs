@@ -70,3 +70,43 @@ pub macro teb_ptr() {
         x86::next_args!(1),
     )
 }
+
+pub macro jump() {
+    concat!(
+        x86::assemble!("mov eax, dword ptr [ecx]"),
+        x86::next_args!(1),
+        x86::assemble!("jmp eax"),
+    )
+}
+
+macro call_inner($conv:tt, $ret:tt : $($arg:tt)*) {
+    concat!(
+        x86::prologue!(),
+        x86::assemble!("mov edx, dword ptr [ecx ]"),
+        x86::next_args!(2),
+        x86::$conv!($($arg)*),
+        x86::assemble!("call edx"),
+        x86::epilogue!(),
+        x86::next_args!(1),
+        x86::$conv!(@ret $ret),
+        x86::next_args!(1 + $($arg)*),
+    )
+}
+pub macro call_cdecl($ret:tt : $($arg:tt)*) {
+    call_inner!(callconv_cdecl, $ret : $($arg)*)
+}
+pub macro callconv_fastcall($ret:tt : $($arg:tt)*) {
+    call_inner!(callconv_fastcall, $ret : $($arg)*)
+}
+pub macro call_stdcall($ret:tt : $($arg:tt)*) {
+    call_inner!(callconv_stdcall, $ret : $($arg)*)
+}
+pub macro call_thiscall($ret:tt : $($arg:tt)*) {
+    call_inner!(callconv_thiscall, $ret : $($arg)*)
+}
+pub macro call_varargs($ret:tt : $($arg:tt)*) {
+    call_inner!(callconv_varargs, $ret : $($arg)*)
+}
+pub macro call_vectorcall($ret:tt : $($arg:tt)*) {
+    call_inner!(callconv_vectorcall, $ret : $($arg)*)
+}

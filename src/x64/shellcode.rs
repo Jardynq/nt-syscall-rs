@@ -175,6 +175,12 @@ macro call_inner($conv:tt, $ret:tt : $($arg:tt)*) {
         x64::next_args!(1 + $($arg)*),
     )
 }
-pub macro call_x64_win64($ret:tt : $($arg:tt)*) {
+pub macro call_varargs($ret:tt : $($arg:tt)*) {
+    call_inner!(callconv_varargs, $ret : $($arg)*)
+}
+pub macro call_vectorcall($ret:tt : $($arg:tt)*) {
+    call_inner!(callconv_vectorcall, $ret : $($arg)*)
+}
+pub macro call_win64($ret:tt : $($arg:tt)*) {
     call_inner!(callconv_win64, $ret : $($arg)*)
 }

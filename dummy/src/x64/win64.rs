@@ -1,33 +1,4 @@
-macro_rules! new_f64 {
-    ($val:expr) => {{
-        let result: u64;
-        const BITS: u64 = ($val as f64).to_bits();
-        unsafe {
-            core::arch::asm!(
-                "",
-                inout("rax") BITS => result,
-            );
-        }
-        f64::from_bits(result)
-    }};
-}
-
-macro_rules! cast_f64 {
-    ($val:expr) => {{
-        let mut result: f64;
-        unsafe {
-            core::arch::asm!(
-                "mov [rsp - 8], {input}",
-                "fild qword ptr [rsp - 8]",
-                "fstp qword ptr [rsp - 8]",
-                "movsd {output}, [rsp - 8]",
-                input = in(reg) $val as u64,
-                output = out(xmm_reg) result,
-            );
-            result
-        }
-    }};
-}
+use crate::*;
 
 #[unsafe(no_mangle)]
 #[unsafe(link_section = ".payload")]

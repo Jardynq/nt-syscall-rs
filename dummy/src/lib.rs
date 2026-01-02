@@ -1,3 +1,4 @@
+#![feature(abi_vectorcall, portable_simd)]
 #![allow(clippy::missing_safety_doc)]
 
 #[cfg(target_arch = "x86_64")]

@@ -209,7 +209,7 @@ fn call_low() {
         asm!(
             args,
             x86::enter_x64!(),
-            x64::call_x64_win64!(u32:),
+            x64::call_win64!(u32:),
             x64::enter_x86!(),
         );
         assert_eq!(retval, 0x123);
@@ -232,7 +232,7 @@ fn call_high_win64_simple() {
         asm!(
             args,
             x86::enter_x64!(),
-            x64::call_x64_win64!(u64:),
+            x64::call_win64!(u64:),
             x64::enter_x86!()
         );
         assert_eq!(retval, 0x123);
@@ -256,7 +256,7 @@ fn call_high_win64_simple_float() {
         asm!(
             args,
             x86::enter_x64!(),
-            x64::call_x64_win64!(f64:),
+            x64::call_win64!(f64:),
             x64::enter_x86!()
         );
         assert_eq!(retval, 123.123);
@@ -299,7 +299,7 @@ fn call_high_win64_complex() {
         asm!(
             args,
             x86::enter_x64!(),
-            x64::call_x64_win64!(f32: u8, u16, u32, u64, f32, f64, ptr, ptr,),
+            x64::call_win64!(f32: u8, u16, u32, u64, f32, f64, ptr, ptr,),
             x64::enter_x86!()
         );
 
@@ -337,7 +337,7 @@ fn call_high_win64_complex2() {
         asm!(
             args,
             x86::enter_x64!(),
-            x64::call_x64_win64!((): f32, f32, f64, f32, ptr),
+            x64::call_win64!((): f32, f32, f64, f32, ptr),
             x64::enter_x86!()
         );
 
