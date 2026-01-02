@@ -1,6 +1,6 @@
 #![no_std]
 #![cfg(windows)]
-#![allow(unused_macros, unused_unsafe)]
+#![allow(unused_macros, unused_unsafe, clippy::missing_transmute_annotations)]
 #![feature(macro_metavar_expr, decl_macro, const_cmp, const_trait_impl)]
 #![recursion_limit = "1024"]
 
