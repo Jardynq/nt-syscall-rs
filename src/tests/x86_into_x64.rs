@@ -220,10 +220,10 @@ fn call_high_win64_simple() {
     emu_only!();
 
     unsafe {
-        const SIZE: u64 = dummy_x64::WIN64_SIMPLE_U32.len() as u64;
+        const SIZE: u64 = dummy_x64::WIN64_SIMPLE.len() as u64;
         let target = alloc_high(SIZE);
 
-        let args = x64::args!(target, dummy_x64::WIN64_SIMPLE_U32.as_ptr(), SIZE);
+        let args = x64::args!(target, dummy_x64::WIN64_SIMPLE.as_ptr(), SIZE);
         asm!(args, x86::enter_x64!(), x64::memcopy!(), x64::enter_x86!());
 
         let mut retval: u64 = 0;
@@ -240,14 +240,14 @@ fn call_high_win64_simple() {
 }
 
 #[test]
-fn call_high_win64_simple_float() {
+fn call_high_win64_simple2() {
     emu_only!();
 
     unsafe {
-        const SIZE: u64 = dummy_x64::WIN64_SIMPLE_F32.len() as u64;
+        const SIZE: u64 = dummy_x64::WIN64_SIMPLE2.len() as u64;
         let target = alloc_high(SIZE);
 
-        let args = x64::args!(target, dummy_x64::WIN64_SIMPLE_F32.as_ptr(), SIZE);
+        let args = x64::args!(target, dummy_x64::WIN64_SIMPLE2.as_ptr(), SIZE);
         asm!(args, x86::enter_x64!(), x64::memcopy!(), x64::enter_x86!());
 
         let mut retval: f64 = 0.0;
@@ -341,6 +341,42 @@ fn call_high_win64_complex2() {
         );
 
         assert_eq!(out.round(), 100.0f32);
+        free(target);
+    }
+}
+
+#[test]
+fn call_high_varargs() {
+    emu_only!();
+
+    unsafe {
+        const SIZE: u64 = dummy_x64::VARARGS.len() as u64;
+        let target = alloc_high(SIZE);
+        let args = x64::args!(target, dummy_x64::VARARGS.as_ptr(), SIZE);
+        asm!(args, x86::enter_x64!(), x64::memcopy!(), x64::enter_x86!());
+
+        let mut out: u32 = 0xdeadbeef;
+        let mut retval: u32 = 0xcafebabe;
+        let args = x64::args!(
+            target,
+            ptr: &mut retval,
+            f32: 1.0,
+            u32: 2,
+            i32: 3,
+            f64: 4.0,
+            u64: 5,
+            ptr: &mut out,
+        );
+
+        asm!(
+            args,
+            x86::enter_x64!(),
+            x64::call_varargs!(i32: f32, u32, i32, f64, u64, ptr),
+            x64::enter_x86!()
+        );
+
+        assert_eq!(out, 30);
+        assert_eq!(retval, 15);
         free(target);
     }
 }

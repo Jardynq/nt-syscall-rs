@@ -10,7 +10,8 @@ compile_error!("Unsupported architecture");
 #[cfg(test)]
 mod tests;
 
-mod shared;
+mod args;
+pub mod float;
 pub mod x64;
 pub mod x86;
 pub use aligned;

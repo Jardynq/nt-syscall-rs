@@ -2,7 +2,7 @@ use crate::tests::*;
 use crate::*;
 
 #[unsafe(naked)]
-pub unsafe extern "win64" fn x64_jump_x86(func: *const u8, stack: *mut u8) -> u32 {
+pub unsafe extern "win64" fn x64_jump_x86(func: *const u8, stack: *mut u8) {
     //crate::host_x64::naked_x64_call_x86_ret_x64!(stdcall 0 u32)
     core::arch::naked_asm!("")
 }

@@ -2,13 +2,13 @@ use crate::*;
 
 #[unsafe(no_mangle)]
 #[unsafe(link_section = ".payload")]
-pub extern "win64" fn win64_simple_u32() -> u32 {
+pub extern "win64" fn win64_simple() -> u32 {
     0x123
 }
 
 #[unsafe(no_mangle)]
 #[unsafe(link_section = ".payload")]
-pub extern "win64" fn win64_simple_f32() -> f64 {
+pub extern "win64" fn win64_simple2() -> f64 {
     new_f64!(123.123)
 }
 

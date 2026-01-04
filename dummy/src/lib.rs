@@ -1,5 +1,7 @@
-#![feature(abi_vectorcall, portable_simd)]
-#![allow(clippy::missing_safety_doc)]
+#![feature(abi_vectorcall, portable_simd, c_variadic, decl_macro)]
+#![allow(clippy::missing_safety_doc, unused)]
+
+include!("../../src/float.rs");
 
 #[cfg(target_arch = "x86_64")]
 pub mod x64;

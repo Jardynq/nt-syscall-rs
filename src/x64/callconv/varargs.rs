@@ -2,6 +2,7 @@
 use crate::x64;
 
 pub macro callconv_varargs {
+    (@arg ($($count:tt)+), i8 $(, $($tail:tt)* )?) => { x64::callconv_varargs!(@arg ($($count)+), u8 $(, $($tail)* )?) },
     (@arg (0), u8  $(, $($tail:tt)* )?) => {
         concat!(
             x64::callconv_varargs!(@arg (1) $(, $($tail)* )?),
@@ -34,6 +35,7 @@ pub macro callconv_varargs {
         )
     },
 
+    (@arg ($($count:tt)+), i16 $(, $($tail:tt)* )?) => { x64::callconv_varargs!(@arg ($($count)+), u16 $(, $($tail)* )?) },
     (@arg (0), u16  $(, $($tail:tt)* )?) => {
         concat!(
             x64::callconv_varargs!(@arg (1) $(, $($tail)* )?),
@@ -66,6 +68,7 @@ pub macro callconv_varargs {
         )
     },
 
+    (@arg ($($count:tt)+), i32 $(, $($tail:tt)* )?) => { x64::callconv_varargs!(@arg ($($count)+), u32 $(, $($tail)* )?) },
     (@arg (0), u32  $(, $($tail:tt)* )?) => {
         concat!(
             x64::callconv_varargs!(@arg (1) $(, $($tail)* )?),
@@ -98,6 +101,7 @@ pub macro callconv_varargs {
         )
     },
 
+    (@arg ($($count:tt)+), i64 $(, $($tail:tt)* )?) => { x64::callconv_varargs!(@arg ($($count)+), u64 $(, $($tail)* )?) },
     (@arg (0), u64  $(, $($tail:tt)* )?) => {
         concat!(
             x64::callconv_varargs!(@arg (1) $(, $($tail)* )?),
@@ -203,24 +207,28 @@ pub macro callconv_varargs {
     },
 
     (@ret ()) => { "" },
+    (@ret i8) => { x64::callconv_varargs!(@ret u8) },
     (@ret u8) => {
         concat!(
             x64::assemble!("mov rdx, qword ptr [rcx]"),
             x64::assemble!("mov byte ptr [rdx], al")
         )
     },
+    (@ret i16) => { x64::callconv_varargs!(@ret u16) },
     (@ret u16) => {
         concat!(
             x64::assemble!("mov rdx, qword ptr [rcx]"),
             x64::assemble!("mov word ptr [rdx], ax")
         )
     },
+    (@ret i32) => { x64::callconv_varargs!(@ret u32) },
     (@ret u32) => {
         concat!(
             x64::assemble!("mov rdx, qword ptr [rcx]"),
             x64::assemble!("mov dword ptr [rdx], eax")
         )
     },
+    (@ret i64) => { x64::callconv_varargs!(@ret u64) },
     (@ret u64) => {
         concat!(
             x64::assemble!("mov rdx, qword ptr [rcx]"),
