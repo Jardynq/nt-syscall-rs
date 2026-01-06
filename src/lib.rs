@@ -44,8 +44,8 @@ pub enum CpuType {
 #[repr(C)]
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct CpuMode {
-    host: CpuType,
-    user: CpuType,
+    pub host: CpuType,
+    pub user: CpuType,
 }
 impl Default for CpuMode {
     fn default() -> Self {
