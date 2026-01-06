@@ -1,43 +1,90 @@
 use crate::tests::*;
 use crate::*;
+use core::ptr;
 
-#[unsafe(naked)]
-pub unsafe extern "win64" fn x64_jump_x86(func: *const u8, stack: *mut u8) {
-    //crate::host_x64::naked_x64_call_x86_ret_x64!(stdcall 0 u32)
-    core::arch::naked_asm!("")
-}
+static TRAMPOLINE_CPU_MODE: &[u8] = &encode!(
+    x64::enter_x86_with_stack!(),
+    x86::get_cpu_mode!(),
+    x86::enter_x64_restore_stack!(),
+    x64::assemble!("ret")
+);
 
-/*
 #[test]
-fn test_cpu_mode() {
-    const SIZE: u64 = 0x10000;
-    let target = alloc_low(SIZE);
-    let trampoline = alloc_low(SIZE);
-    let stack = alloc_low(SIZE);
-
+fn cpu_mode() {
     unsafe {
-        core::ptr::copy(
-            dummy_x86::STDCALL_0_U32.as_ptr(),
-            target,
-            dummy_x86::STDCALL_0_U32.len(),
+        const SIZE: u64 = 0x1000;
+        let target = alloc_low(SIZE);
+        let stack = alloc_low(SIZE);
+        ptr::copy(
+            TRAMPOLINE_CPU_MODE.as_ptr(),
+            target as *mut u8,
+            TRAMPOLINE_CPU_MODE.len(),
         );
-        core::ptr::copy(x64_jump_x86 as *const _, trampoline, SIZE);
+
+        let mode_ptr = stack as *const u16;
+
+        let x86_args_ptr = alloc_low(SIZE);
+        let x86_args = core::slice::from_raw_parts_mut(x86_args_ptr as *mut u8, SIZE as usize);
+        x86::args_in!(x86_args, ptr: mode_ptr);
+
+        let x64_args = x64::args!(target, stack + SIZE, x86_args_ptr);
+
+        asm!(
+            x64_args,
+            x64::assemble!("mov rax, qword ptr [rcx]"),
+            x64::arg_next!(1),
+            x64::assemble!("call rax")
+        );
+
+        let mode = *mode_ptr;
+        let mode = CpuMode::from(mode);
+        assert_eq!(mode.host, CpuType::X64);
+        assert_eq!(mode.user, CpuType::X86);
+
+        free(target);
+        free(stack);
+        free(x86_args_ptr);
     }
-
-    wait();
-
-    let mode = unsafe {
-        let targ: extern "stdcall" fn() -> u32 = core::mem::transmute(target);
-        let tramp: extern "win64" fn(*const u8, *mut u8) -> u32 = core::mem::transmute(trampoline);
-        let res: u32 = tramp(targ as _, stack + SIZE / 2);
-        panic!("panic: {}", res);
-    };
-
-    //assert_eq!(mode.host, CpuType::X64);
-    //assert_eq!(mode.user, CpuType::X86);
-
-    free(target);
-    free(trampoline);
-    free(stack);
 }
- */
+
+static TRAMPOLINE_JUMP_LOW: &[u8] = &encode!(x64::enter_x86_with_stack!(), x86::jump!(),);
+static TRAMPOLINE_JUMP_LOW_TARGET: &[u8] =
+    &encode!(x86::enter_x64_restore_stack!(), x64::assemble!("ret"));
+
+#[test]
+fn jump_low() {
+    unsafe {
+        const SIZE: u64 = 0x1000;
+        let target = alloc_low(SIZE);
+        let stack = alloc_low(SIZE);
+        let jump_target = alloc_low(SIZE);
+
+        ptr::copy(
+            TRAMPOLINE_JUMP_LOW.as_ptr(),
+            target as *mut u8,
+            TRAMPOLINE_JUMP_LOW.len(),
+        );
+        ptr::copy(
+            TRAMPOLINE_JUMP_LOW_TARGET.as_ptr(),
+            jump_target as *mut u8,
+            TRAMPOLINE_JUMP_LOW_TARGET.len(),
+        );
+
+        let x86_args_ptr = alloc_low(SIZE);
+        let x86_args = core::slice::from_raw_parts_mut(x86_args_ptr as *mut u8, SIZE as usize);
+        x86::args_in!(x86_args, ptr: jump_target);
+
+        let x64_args = x64::args!(target, stack + SIZE, x86_args_ptr);
+        asm!(
+            x64_args,
+            x64::assemble!("mov rax, qword ptr [rcx]"),
+            x64::arg_next!(1),
+            x64::assemble!("call rax")
+        );
+
+        free(target);
+        free(stack);
+        free(jump_target);
+        free(x86_args_ptr);
+    }
+}

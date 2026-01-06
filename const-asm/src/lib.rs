@@ -113,7 +113,7 @@ fn parse_input(input: TokenStream) -> String {
                 current.push_str(line.trim_matches('"'));
             }
             TokenTree::Punct(punct) => match punct.as_char() {
-                '+' | '-' | '*' => {
+                '+' | '-' | '*' | '/' => {
                     current.push(punct.as_char());
                 }
                 ',' => {
@@ -123,6 +123,30 @@ fn parse_input(input: TokenStream) -> String {
                     }
                 }
                 _ => panic!("Unexpected token in input: {:?}", punct),
+            },
+            TokenTree::Group(group) => match group.delimiter() {
+                proc_macro::Delimiter::Parenthesis => {
+                    let inner = parse_input(group.stream());
+                    current.push('(');
+                    current.push_str(&inner);
+                    current.push(')');
+                }
+                proc_macro::Delimiter::Bracket => {
+                    let inner = parse_input(group.stream());
+                    current.push('[');
+                    current.push_str(&inner);
+                    current.push(']');
+                }
+                proc_macro::Delimiter::Brace => {
+                    let inner = parse_input(group.stream());
+                    current.push('{');
+                    current.push_str(&inner);
+                    current.push('}');
+                }
+                proc_macro::Delimiter::None => {
+                    let inner = parse_input(group.stream());
+                    current.push_str(&inner);
+                }
             },
             _ => panic!("Unexpected token in input: {:?}", token),
         }

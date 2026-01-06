@@ -98,7 +98,7 @@ pub macro encode($($lit:tt)+) {
                     const_str::replace!(
                         const_str::replace!(
                             const_str::replace!(
-                                $($lit)+,
+                                concat!($($lit)+),
                                 "0x",
                                 ""
                             ),

@@ -16,6 +16,19 @@ pub(crate) macro args($uty:ty, $($args:tt)*) {{
     buffer
 }}
 
+pub(crate) macro args_in($uty:ty, $buffer:expr, $($args:tt)*) {{
+    #[allow(unused_mut)]
+    let mut ptr = ($buffer).as_ptr() as *mut $uty;
+    macro push($$value:expr) {{
+        unsafe {
+            *ptr = $$value as $uty;
+            ptr = ptr.add(1);
+        }
+    }}
+    munch_args!($uty, push, $($args)*);
+    let _ = ptr;
+}}
+
 pub(crate) macro count_args {
     ($(,)?)                                 => { 0 },
     (ptr: $arg:expr     $(, $($tail:tt)*)?) => { count_args!($($($tail)*)?) + 1 },

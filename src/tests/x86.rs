@@ -73,7 +73,7 @@ fn args_fn() {
             "push eax\n",
             "mov edx, [ecx + 0x8]\n",
             "call edx\n",
-            x86::next_args!(4),
+            x86::arg_next!(4),
         )
     };
 }
@@ -109,7 +109,7 @@ fn args() {
             "je 2f\n",
             "call edx\n",
             "2:\n",
-            x86::next_args!(@ 0 + 1 + 0),
+            x86::arg_next!(@ 0 + 1 + 0),
             "mov eax, [ecx]\n",
             "cmp eax, 0x2222\n",
             "je 3f\n",
@@ -120,7 +120,7 @@ fn args() {
             "je 4f\n",
             "call edx\n",
             "4:\n",
-            x86::next_args!(1 + u32),
+            x86::arg_next!(1 + u32),
             "mov eax, [ecx]\n",
             "mov eax, [eax]\n",
             "cmp eax, 0x4444\n",
@@ -131,7 +131,7 @@ fn args() {
             "mov dword ptr [eax], 0x1234\n",
             "mov eax, [ecx + 8]\n",
             "mov dword ptr [eax], 0x5678\n",
-            x86::next_args!(1 + u32, u32),
+            x86::arg_next!(1 + u32, u32),
         )
     };
 

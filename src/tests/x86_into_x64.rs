@@ -27,31 +27,27 @@ fn peb_teb() {
     unsafe {
         let mut peb: u64 = 0;
         let mut teb: u64 = 0;
+        let mut peb_from_teb: u64 = 0;
+        let mut teb_from_teb: u64 = 0;
         let args = x64::args!(
             ptr: &mut peb,
-            ptr: &mut teb
+            ptr: &mut teb,
+            ptr: &mut peb_from_teb,
+            ptr: &mut teb_from_teb
         );
         asm!(
             args,
             x86::enter_x64!(),
             x64::peb_ptr!(),
             x64::teb_ptr!(),
-            x64::enter_x86!()
-        );
-
-        let mut peb_from_teb: u64 = 0;
-        let mut teb_from_teb: u64 = 0;
-        let args = x64::args!(
-            ptr: &mut peb_from_teb,
-            teb + 0x60,
-            ptr: &mut teb_from_teb,
-            teb + 0x30
-        );
-        asm!(
-            args,
-            x86::enter_x64!(),
-            x64::memread_u64!(),
-            x64::memread_u64!(),
+            x64::arg_load!("rax", -1),
+            x64::assemble!("mov rax, qword ptr [rax]"),
+            x64::arg_load!("r8", 0),
+            x64::assemble!("mov rdx, qword ptr [rax + 0x60]"),
+            x64::assemble!("mov qword ptr [r8], rdx"),
+            x64::arg_load!("r8", 1),
+            x64::assemble!("mov rdx, qword ptr [rax + 0x30]"),
+            x64::assemble!("mov qword ptr [r8], rdx"),
             x64::enter_x86!()
         );
 

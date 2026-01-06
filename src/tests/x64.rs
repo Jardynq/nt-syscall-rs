@@ -69,7 +69,7 @@ fn args_fn() {
             "mov r8, [rcx + 0x18]\n",
             "mov rcx, [rcx]\n",
             "call rax\n",
-            x64::next_args!(4),
+            x64::arg_next!(4),
         )
     };
 }
@@ -105,7 +105,7 @@ fn args() {
             "je 2f\n",
             "call rdx\n",
             "2:\n",
-            x64::next_args!(@ 0 + 1 + 0),
+            x64::arg_next!(@ 0 + 1 + 0),
             "mov rax, [rcx]\n",
             "cmp rax, 0x2222\n",
             "je 3f\n",
@@ -116,7 +116,7 @@ fn args() {
             "je 4f\n",
             "call rdx\n",
             "4:\n",
-            x64::next_args!(1 + u64),
+            x64::arg_next!(1 + u64),
             "mov rax, [rcx]\n",
             "mov rax, [rax]\n",
             "cmp rax, 0x4444\n",
@@ -127,7 +127,7 @@ fn args() {
             "mov qword ptr [rax], 0x1234\n",
             "mov rax, [rcx + 0x10]\n",
             "mov qword ptr [rax], 0x5678\n",
-            x64::next_args!(1 + u64, u64),
+            x64::arg_next!(1 + u64, u64),
         )
     };
 

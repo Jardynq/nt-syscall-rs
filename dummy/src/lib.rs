@@ -1,5 +1,5 @@
 #![feature(abi_vectorcall, portable_simd, c_variadic, decl_macro)]
-#![allow(clippy::missing_safety_doc, unused)]
+#![allow(clippy::missing_safety_doc, unused, improper_ctypes_definitions)]
 
 include!("../../src/float.rs");
 
